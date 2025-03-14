@@ -1,4 +1,5 @@
 use std::{
+    cmp::{max, min},
     collections::{BTreeMap, HashMap},
     hash::{DefaultHasher, Hash, Hasher},
 };
@@ -17,8 +18,50 @@ const MUTATIONS: usize = 3;
 
 type Solution = BTreeMap<Username, BTreeMap<UnitCode, BTreeMap<Activity, Class>>>;
 
-fn score_solve(_users: &HashMap<Username, UserInfo>, _solution: &Solution) -> i64 {
-    0
+fn score_solve(users: &HashMap<Username, UserInfo>, solution: &Solution) -> i64 {
+    let mut ans: i64 = 0;
+
+    // Check no overlapping //////////
+    for (user, units) in solution {
+        let mut user_classes: Vec<Class> = Vec::new();
+
+        for (_, activities) in units {
+            for (_, class) in activities {
+                user_classes.push(*class);
+            }
+        }
+
+        for i in 0..user_classes.len() {
+            for j in (i + 1)..user_classes.len() {
+                let a = user_classes[i];
+                let b = user_classes[j];
+
+                if (a.day == b.day && max(a.start, b.start) > min(a.end, b.end)) {
+                    ans -= 10
+                }
+            }
+        }
+    }
+
+    for (username, user_info) in users {
+        for preference in user_info.preferences.iter() {
+            match preference {
+                Preference::ShareClass(unitcode, activity, username_b) => {
+                    let class_a = solution[username]
+                        .get(unitcode)
+                        .and_then(|x| x.get(activity));
+                    let class_b = solution[username_b]
+                        .get(unitcode)
+                        .and_then(|x| x.get(activity));
+                    if class_a == class_b {
+                        ans += 1
+                    }
+                }
+            }
+        }
+    }
+
+    ans
 }
 
 fn random_sol(
