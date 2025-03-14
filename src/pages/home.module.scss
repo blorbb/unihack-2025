@@ -35,6 +35,11 @@
   justify-content: center;
 }
 
+.heading-join,
+.form-join {
+  background-color: var(--color-surface-container);
+}
+
 .form-create,
 .form-join {
   display: grid;
@@ -56,7 +61,7 @@
 }
 
 .join-input {
-  background-color: var(--color-surface-container);
+  background-color: var(--color-surface-container-high);
   color: var(--color-on-surface-container);
 
   font-size: var(--fs-large);
