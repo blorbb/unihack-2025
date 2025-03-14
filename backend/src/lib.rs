@@ -28,14 +28,15 @@ type MHashMap<K, V> = Mutex<HashMap<K, V>>;
 static GROUPS: LazyLock<MHashMap<GroupName, Group>> = LazyLock::new(|| {
     let mut map = HashMap::<_, _>::new();
     if TESTING {
-        let mut group = Group::new(String::new());
+        let name = String::from("testid");
+        let mut group = Group::new(name.clone());
         group.members.extend(
             vec!["bobr", "cat", "car"]
                 .into_iter()
                 .map(String::from)
                 .collect::<Vec<_>>(),
         );
-        map.insert(String::new(), group);
+        map.insert(name, group);
     }
     Mutex::new(map)
 });
