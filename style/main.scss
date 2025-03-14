@@ -390,3 +390,12 @@ h3 {
   width: 100%;
   height: 2rem;
 }
+
+
+.page-not-found-7c54a4b {
+  padding: 3rem;
+
+  > * + * {
+    padding-top: 1rem;
+  }
+}

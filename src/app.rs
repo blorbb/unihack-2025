@@ -39,7 +39,7 @@ pub fn App() -> impl IntoView {
 
         Router {
             main {
-                Routes fallback=["Page not found".into_view()] {
+                Routes fallback=[pages::NotFound] {
                     Route path={path!("")} view={pages::HomePage};
                 }
             }
