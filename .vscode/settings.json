@@ -1,8 +1,9 @@
 {
+  "rust-analyzer.procMacro.ignored": {
+    "stylance": ["import_style_classes"],
     "rust-analyzer.procMacro.ignored": {
-        "stylance": ["import_style_classes"],
-        "rust-analyzer.procMacro.ignored": {
-            "leptos_macro": ["server"]
-        }
+      "leptos_macro": ["server"]
     }
+  },
+  "rust-analyzer.cargo.features": ["ssr"]
 }
