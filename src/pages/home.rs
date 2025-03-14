@@ -1,6 +1,8 @@
 use leptos::prelude::*;
 use leptos_mview::mview;
 
+use crate::components::{button::ButtonVariant, Button};
+
 stylance::import_style!(s, "home.module.scss");
 
 #[component]
@@ -13,8 +15,12 @@ pub fn HomePage() -> impl IntoView {
             h2 class={s::heading_create} ("Create new group")
             div class={s::form_create} (
                 ActionForm action={create_group} (
-                    button class={s::create_group} type="submit" (
-                        "+"
+                    Button
+                        variant={ButtonVariant::Primary}
+                        class={s::create_group}
+                        type="submit"
+                    (
+                       "+"
                     )
                 )
             )
@@ -23,7 +29,13 @@ pub fn HomePage() -> impl IntoView {
                 ActionForm action={join_group} (
                     input class={s::join_input}
                         type="search" name="group" placeholder="Group ID";
-                    button class={s::join_button} type="submit" ("Join")
+                    Button
+                        variant={ButtonVariant::Primary}
+                        class={s::join_button}
+                        type="submit"
+                    (
+                        "Join"
+                    )
                 )
             )
         )
