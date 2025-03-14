@@ -6,7 +6,7 @@ use leptos_router::{
     path,
 };
 
-stylance::import_style!(style, "app.module.scss");
+use crate::pages;
 
 pub fn shell(options: LeptosOptions) -> impl IntoView {
     view! {
@@ -39,31 +39,10 @@ pub fn App() -> impl IntoView {
 
         Router {
             main {
-                Routes fallback=["Page not found".into_view()] {
-                    Route path={path!("")} view={HomePage};
+                Routes fallback=[pages::NotFound] {
+                    Route path={path!("")} view={pages::HomePage};
                 }
             }
         }
     }
-}
-
-/// Renders the home page of your application.
-#[component]
-fn HomePage() -> impl IntoView {
-    let action = ServerAction::<Increment>::new();
-    let on_click = move |_| {
-        action.dispatch("hello there".to_string().into());
-    };
-
-    mview! {
-        h1 { "Something or another" }
-        button class={style::some_button} on:click={on_click} {
-            "Click me: " {action.value()}
-        }
-    }
-}
-
-#[server]
-async fn increment(msg: String) -> Result<u32, ServerFnError> {
-    Ok(backend::increment(&msg))
 }

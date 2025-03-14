@@ -18,6 +18,7 @@ tokio = { version = "1", features = ["rt-multi-thread"], optional = true }
 wasm-bindgen = { version = "=0.2.100", optional = true }
 stylance = { version = "0.5.5", features = ["nightly"] }
 backend = { path = "./backend" }
+urlencoding = "2"
 
 [workspace]
 members = ["backend"]
@@ -42,7 +43,7 @@ codegen-units = 1
 panic = "abort"
 
 [package.metadata.stylance]
-output_dir = "./style/"
+output_file = "./style/main.scss"
 
 [package.metadata.leptos]
 # The name used by wasm-bindgen/cargo-leptos for the JS/WASM bundle. Defaults to the crate name

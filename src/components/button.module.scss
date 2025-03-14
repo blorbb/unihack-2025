@@ -1,0 +1,34 @@
+.btn {
+  display: grid;
+  place-content: center;
+}
+
+.primary {
+  --component-transitions: var(--base-transitions),
+    filter var(--time-transition);
+
+  background-color: var(--color-primary-container);
+  color: var(--color-on-primary-container);
+
+  transition: var(--component-transitions);
+
+  &:hover,
+  &:focus {
+    filter: brightness(0.9);
+  }
+}
+
+.secondary {
+  --component-transitions: var(--base-transitions),
+    filter var(--time-transition);
+
+  background-color: var(--color-secondary-container);
+  color: var(--color-on-secondary-container);
+
+  transition: var(--component-transitions);
+
+  &:hover,
+  &:focus {
+    filter: brightness(0.9);
+  }
+}

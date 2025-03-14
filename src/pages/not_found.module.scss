@@ -1,0 +1,7 @@
+.page-not-found {
+  padding: 3rem;
+
+  > * + * {
+    padding-top: 1rem;
+  }
+}

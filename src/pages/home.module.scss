@@ -1,0 +1,81 @@
+.page-home {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-areas:
+    "h-create h-join"
+    "i-create i-join";
+  min-height: 100dvh;
+
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "h-create"
+      "i-create"
+      "h-join"
+      "i-join";
+  }
+
+  h2 {
+    font-size: var(--fs-large);
+  }
+}
+
+.heading-create {
+  grid-area: h-create;
+}
+
+.heading-join {
+  grid-area: h-join;
+}
+
+.heading-create,
+.heading-join {
+  display: grid;
+  align-items: end;
+  justify-content: center;
+}
+
+.heading-join,
+.form-join {
+  background-color: var(--color-surface-container);
+}
+
+.form-create,
+.form-join {
+  display: grid;
+  align-items: start;
+  justify-content: center;
+}
+
+.form-create,
+.form-join {
+  padding: 1rem;
+}
+
+.create-group {
+  width: 8rem;
+  height: 5rem;
+  font-size: 2rem;
+
+  border-radius: var(--brad-small);
+}
+
+.join-input {
+  background-color: var(--color-surface-container-high);
+  color: var(--color-on-surface-container);
+
+  font-size: var(--fs-large);
+  height: 3rem;
+  border-radius: var(--brad-small) var(--brad-small) 0 0;
+  padding: 0.5rem;
+
+  &::placeholder {
+    color: var(--color-surface-variant);
+  }
+}
+
+.join-button {
+  border-radius: 0 0 var(--brad-small) var(--brad-small);
+  width: 100%;
+  height: 2rem;
+}
