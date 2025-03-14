@@ -1,0 +1,10 @@
+[package]
+name = "backend"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+tap = "1"
+itertools = "0.14"
+derive_more = { version = "2", features = ["full"] }
+serde = { version = "1", features = ["derive", "rc"] }
