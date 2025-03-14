@@ -3,7 +3,7 @@ use leptos_meta::{provide_meta_context, MetaTags, Stylesheet, Title};
 use leptos_mview::mview;
 use leptos_router::{
     components::{Route, Router, Routes},
-    path,
+    path, SsrMode,
 };
 
 use crate::pages;
@@ -41,6 +41,7 @@ pub fn App() -> impl IntoView {
             main {
                 Routes fallback=[pages::NotFound] {
                     Route path={path!("")} view={pages::HomePage};
+                    Route path={path!("g/:group")} view={pages::GroupPage} ssr={SsrMode::Async};
                 }
             }
         }
