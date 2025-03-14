@@ -3,6 +3,8 @@
 
 use std::sync::atomic::{AtomicU32, Ordering};
 
+pub mod classes;
+
 pub fn increment(message: &str) -> u32 {
     static N: AtomicU32 = AtomicU32::new(0);
 
