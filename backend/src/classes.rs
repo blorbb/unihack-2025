@@ -4,7 +4,7 @@ pub type UnitCode = String;
 pub type Activity = String;
 pub type Username = String;
 
-#[derive(Clone, Copy, Hash)]
+#[derive(Clone, Copy, Hash, PartialEq, Eq, PartialOrd, Ord)]
 pub enum WeekDay {
     Monday,
     Tuesday,
@@ -13,13 +13,13 @@ pub enum WeekDay {
     Friday,
 }
 
-#[derive(Clone, Copy, Hash)]
+#[derive(Clone, Copy, Hash, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Class {
-    day: WeekDay,
+    pub day: WeekDay,
 
     // Minutes from midnight
-    start: usize,
-    end: usize,
+    pub start: usize,
+    pub end: usize,
 }
 
 pub type ClassTimes = HashMap<UnitCode, HashMap<Activity, Vec<Class>>>;
