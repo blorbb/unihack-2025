@@ -132,5 +132,9 @@ pub fn solve(class_times: &ClassTimes, users: &HashMap<Username, UserInfo>) {
         while (solutions.len() > POPULATION / 2) {
             solutions.first_entry().unwrap().remove();
         }
+        let solution = new_sol(class_times, solutions.iter().choose(&mut rng).unwrap().1, &mut rng);
+        let score = score_solve(users, &solution);
+        let hash = hash_solve(&solution);
+        solutions.insert((score, hash), solution);
     }
 }
