@@ -3,7 +3,6 @@ use std::{collections::HashMap, path::Path};
 use anyhow::{Result, anyhow};
 use itertools::Itertools;
 use num_traits::FromPrimitive;
-use tokio_stream::{StreamExt, wrappers::ReadDirStream};
 
 use crate::shared::activity::{Activity, Class, Classes, UnitCode, UnitInfo};
 
@@ -14,6 +13,9 @@ fn parse_class(data: &serde_json::Value) -> Option<Option<(Activity, Class)>> {
     }
 
     let activity = data.get("type")?.as_str()?.to_owned();
+    if activity == "PASS-Optional" {
+        return None;
+    }
     let day = FromPrimitive::from_u64(data.get("day")?.as_u64()?)?;
     let code = data.get("series")?.as_str()?.to_owned();
     let start = {
