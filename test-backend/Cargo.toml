@@ -1,0 +1,8 @@
+[package]
+name = "test-backend"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+backend = { path = "../backend", features = ["ssr"] }
+tokio = { version = "1", features = ["full"] }

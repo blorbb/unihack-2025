@@ -23,7 +23,7 @@ thiserror = "2.0.12"
 serde = { version = "1.0.219", features = ["derive"] }
 
 [workspace]
-members = ["backend"]
+members = ["backend", "test-backend"]
 
 [features]
 hydrate = ["leptos/hydrate", "dep:console_error_panic_hook", "dep:wasm-bindgen"]
