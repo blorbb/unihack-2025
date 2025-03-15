@@ -4,6 +4,11 @@
   > * + * {
     margin-top: 1rem;
   }
+
+  h3 {
+    font-size: 1.5rem;
+    padding: 0.5rem;
+  }
 }
 
 .search-units-input {
@@ -38,8 +43,15 @@
 
 .unit-table {
   width: 100%;
+  border-collapse: collapse;
 
   th:nth-child(1) {
     width: 30%;
+  }
+
+  th,
+  td {
+    border: 1px solid var(--color-outline-variant);
+    padding: 0.25rem 0.5rem;
   }
 }

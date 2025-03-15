@@ -95,12 +95,15 @@ pub fn Preferences(
             let Ok(Some(activities)) = api::get_unit_activities(unit.clone()).await else {
                 return;
             };
-            member.write().units.push(MemberUnitPreferences {
-                code: unit,
-                activities: BTreeMap::from_iter(
-                    activities.into_iter().map(|act| (act, BTreeSet::default())),
-                ),
-            })
+            member.write().units.insert(
+                0,
+                MemberUnitPreferences {
+                    code: unit,
+                    activities: BTreeMap::from_iter(
+                        activities.into_iter().map(|act| (act, BTreeSet::default())),
+                    ),
+                },
+            )
         });
     };
 
@@ -112,6 +115,7 @@ pub fn Preferences(
                 type="text"
                 placeholder="Add unit"
                 bind:value={query};
+
             ul class={s::searched_units} (
                 Transition fallback=["Loading..."]
                 (
