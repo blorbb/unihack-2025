@@ -123,6 +123,17 @@ pub fn load_classes() {
     let _ = &*state::CLASSES;
 }
 
+pub fn get_activities(unitcode: &str) -> Option<Vec<String>> {
+    Some(
+        state::CLASSES
+            .get(unitcode)?
+            .1
+            .iter()
+            .map(|(k, v)| k.clone())
+            .collect(),
+    )
+}
+
 #[derive(Debug)]
 struct GroupState {
     group: Group,
