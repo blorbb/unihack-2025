@@ -34,6 +34,18 @@
 }
 
 
+.calendar-c500e2d {
+	display: grid;
+	grid-template-columns: repeat(5, 1fr);
+}
+
+.day-c500e2d {
+	text-align: center;
+}
+
+.day_schedule-c500e2d {
+	height: 12 * 60px;
+}
 
 
 // a reset //

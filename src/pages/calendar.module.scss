@@ -1,0 +1,12 @@
+.calendar {
+	display: grid;
+	grid-template-columns: repeat(5, 1fr);
+}
+
+.day {
+	text-align: center;
+}
+
+.day_schedule {
+	height: 12 * 60px;
+}

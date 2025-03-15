@@ -7,10 +7,12 @@ stylance::import_style!(s, "member_layout.module.scss");
 #[component]
 pub fn MemberLayout() -> impl IntoView {
     mview! {
-        ul class={s::member_nav} (
-            li (A href="" ("Preferences"))
-            li (A href="calendar" ("Calendar"))
+        div(
+            ul class={s::member_nav} (
+                li (A href="" ("Preferences"))
+                li (A href="calendar" ("Calendar"))
+            )
+            Outlet;
         )
-        Outlet;
     }
 }
