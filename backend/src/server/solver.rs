@@ -18,7 +18,7 @@ const MUTATIONS: usize = 5;
 
 type Solution = BTreeMap<String, BTreeMap<UnitCode, BTreeMap<Activity, Class>>>;
 
-pub type ClassTimes = HashMap<UnitCode, Classes>;
+pub type ClassTimes = HashMap<UnitCode, (UnitInfo, Classes)>;
 
 fn score_solve(members: &Vec<Member>, solution: &Solution) -> i64 {
     let mut ans: i64 = 0;
@@ -82,6 +82,7 @@ fn random_sol(class_times: &ClassTimes, users: &Vec<Member>, rng: &mut ThreadRng
                         (
                             unit_code.clone(),
                             class_times[unit_code]
+                                .1
                                 .iter()
                                 .map(|(activity, classes)| {
                                     (activity.clone(), classes.choose(rng).unwrap().clone())
@@ -109,7 +110,7 @@ fn new_sol(class_times: &ClassTimes, solution: &Solution, rng: &mut ThreadRng) -
         let (unit, activities) = units.iter_mut().choose(rng).unwrap();
         let (activity, class) = activities.iter_mut().choose(rng).unwrap();
 
-        *class = class_times[unit][activity].choose(rng).unwrap().clone();
+        *class = class_times[unit].1[activity].choose(rng).unwrap().clone();
     }
 
     solution

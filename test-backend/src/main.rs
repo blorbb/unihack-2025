@@ -7,10 +7,7 @@ use backend::{
 use std::path::Path;
 
 fn main() -> Result<()> {
-    let classes: ClassTimes = backend::classes::load_classes(Path::new("../class-data/classes"))?
-        .into_iter()
-        .map(|(a, (_, c))| (a, c))
-        .collect();
+    let classes: ClassTimes = backend::classes::load_classes(Path::new("../class-data/classes"))?;
 
     let members = vec![
         (Member {
