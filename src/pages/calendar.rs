@@ -1,4 +1,6 @@
-use backend::{activity::WeekDay, Member};
+use std::collections::BTreeMap;
+
+use backend::activity::{Class, WeekDay};
 use leptos::prelude::*;
 use leptos_mview::mview;
 use leptos_router::{hooks::use_params, params::Params};
@@ -9,6 +11,11 @@ use crate::api;
 
 stylance::import_style!(s, "calendar.module.scss");
 
+/// 8 am
+const START_TIME: u16 = 8 * 60;
+/// 10 pm
+const END_TIME: u16 = 20 * 60;
+
 #[derive(Params, Clone, Default, PartialEq)]
 struct CalendarParams {
     group: String,
@@ -18,13 +25,9 @@ struct CalendarParams {
 #[component]
 pub fn CalendarPage() -> impl IntoView {
     let param = use_params::<CalendarParams>();
-    let member_resource = Resource::new(
+    let calendar_resource = Resource::new(
         move || param.read().clone().unwrap_or_default(),
-        async |CalendarParams { group, member }| {
-            api::get_group(group)
-                .await
-                .map(|group| group?.members.into_iter().find(|mem| mem.name == member))
-        },
+        |CalendarParams { group, member }| api::get_member_calendar(group, member),
     );
 
     mview! {
@@ -35,12 +38,12 @@ pub fn CalendarPage() -> impl IntoView {
                 fallback={|err| mview! { "Oops!" f["{:#?}", err()] }}
             (
                 [Suspend::new(async move {
-                    match member_resource.await {
-                        Err(_) => Err(GetError::ServerError),
-                        Ok(None) => Err(GetError::MemberNotFound),
-                        Ok(Some(member)) => {
+                    match calendar_resource.await {
+                        Err(e) => Err(GetError::ServerError(e)),
+                        Ok(calendar) => {
                             Ok(mview! {
-                               Calendar member={member};
+                            h1({param.read().as_ref().map(|x| x.member.clone()).unwrap_or_default()})
+                               Calendar calendar={calendar};
                             })
                         }
                     }
@@ -51,27 +54,29 @@ pub fn CalendarPage() -> impl IntoView {
 }
 
 #[component]
-pub fn Calendar(#[prop(into)] member: Signal<Member>) -> impl IntoView {
+pub fn Calendar(
+    #[prop(into)] calendar: Signal<BTreeMap<String, BTreeMap<String, Class>>>,
+) -> impl IntoView {
     mview! {
-        h1({member().name})
-
-        div (
+        div class={s::calendar} (
             For
                 each=[WeekDay::iter()]
                 key={WeekDay::clone}
             |day| {
                 div (
-                    h2({<&str>::from(day)})
+                    h2 class={s::day} ({<&str>::from(day)})
+
+                    div class={s::day_schedule} ()
                 )
             }
         )
     }
 }
 
-#[derive(thiserror::Error, Debug, Copy, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(thiserror::Error, Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub enum GetError {
     #[error("User not found.")]
     MemberNotFound,
-    #[error("Server error.")]
-    ServerError,
+    #[error("{0}")]
+    ServerError(ServerFnError),
 }
