@@ -1,13 +1,13 @@
 use backend::{activity::UnitCode, Member};
 use leptos::{logging, prelude::*};
 use leptos_mview::mview;
-use leptos_router::{components::A, hooks::use_params, params::Params};
+use leptos_router::{hooks::use_params, params::Params};
 use serde::{Deserialize, Serialize};
 use tap::Tap;
 
 use crate::{
     api,
-    components::{button::ButtonVariant, Button, MemberNav},
+    components::{button::ButtonVariant, Button},
 };
 
 stylance::import_style!(s, "preferences.module.scss");
@@ -98,7 +98,6 @@ pub fn Preferences(
     let add_unit_input = RwSignal::new(String::new());
     mview! {
         h1({member().name})
-        MemberNav;
 
         h2 ("Units")
 

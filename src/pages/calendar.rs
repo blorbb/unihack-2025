@@ -4,7 +4,7 @@ use leptos_mview::mview;
 use leptos_router::{hooks::use_params, params::Params};
 use serde::{Deserialize, Serialize};
 
-use crate::{api, components::MemberNav};
+use crate::api;
 
 stylance::import_style!(s, "calendar.module.scss");
 
@@ -49,7 +49,8 @@ pub fn CalendarPage() -> impl IntoView {
 pub fn Calendar(#[prop(into)] member: Signal<Member>) -> impl IntoView {
     mview! {
         h1({member().name})
-        MemberNav;
+
+
     }
 }
 

@@ -43,7 +43,10 @@ pub fn App() -> impl IntoView {
                 ParentRoute path={path!("/g/:group")} view={pages::GroupLayout} ssr={SsrMode::Async} (
                     // TODO: actual 'select a member'
                     Route path={path!("")} view={pages::NoMemberSelected};
-                    Route path={path!(":member")} view={pages::PreferencesPage};
+                    ParentRoute path={path!(":member")} view={pages::MemberLayout} (
+                        Route path={path!("")} view={pages::PreferencesPage};
+                        Route path={path!("calendar")} view={pages::CalendarPage};
+                    )
                 )
             }
         }
