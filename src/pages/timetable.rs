@@ -51,13 +51,6 @@ struct TimetableParams {
 #[component]
 pub fn TimetablePage() -> impl IntoView {
     let param = use_params::<TimetableParams>();
-    let member = move || {
-        param
-            .read()
-            .as_ref()
-            .map(|params| params.member.clone())
-            .unwrap_or_default()
-    };
     let timetable_resource = Resource::new(
         move || param.read().clone().unwrap_or_default(),
         |TimetableParams { group, member }| api::get_member_calendar(group, member),
