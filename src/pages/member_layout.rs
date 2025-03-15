@@ -27,7 +27,7 @@ pub fn MemberLayout() -> impl IntoView {
     mview! {
         div(
             nav class={s::layout} (
-                h1 class={s::header} ({member()})
+                h1 ({member()})
                 ul class={s::member_nav} (
                     li (A href="" ("Preferences"))
                     li (A href="timetable" ("Timetable"))

@@ -15,7 +15,7 @@ stylance::import_style!(s, "timetable.module.scss");
 /// 8 am
 const START_TIME: u16 = 8 * 60;
 /// 10 pm
-const END_TIME: u16 = 20 * 60;
+const END_TIME: u16 = 22 * 60;
 
 fn format_time(time: u16) -> String {
     let hrs = time / 60;
