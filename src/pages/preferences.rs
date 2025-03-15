@@ -149,7 +149,7 @@ pub fn Preferences(
                     key={|unit| unit.code.clone()}
                 |unit| {
                     li(
-                        UnitPreferences {unit} {member} group_members={group.members.iter().map(|mem| mem.name.clone()).collect()};
+                        UnitPreferences unit={unit.code} {member} group_members={group.members.iter().map(|mem| mem.name.clone()).collect()};
                     )
                 }
             )
@@ -160,19 +160,29 @@ pub fn Preferences(
 
 #[component]
 fn UnitPreferences(
-    unit: MemberUnitPreferences,
+    unit: String,
     member: RwSignal<MemberInfo>,
     group_members: BTreeSet<String>,
 ) -> impl IntoView {
-    let unit = StoredValue::new(unit);
+    let unit_code = StoredValue::new(unit);
+    let unit = move || {
+        member
+            .read()
+            .units
+            .iter()
+            .find(|u| u.code == *unit_code.read_value())
+            .unwrap()
+            .clone()
+    };
     let group_members = StoredValue::new(group_members);
 
     let set_activity_users = move |activity: String, members: BTreeSet<String>| {
+        leptos::logging::log!("{members:?}");
         let mut member_guard = member.write();
         let Some(unit) = member_guard
             .units
             .iter_mut()
-            .find(|u| u.code == unit.read_value().code)
+            .find(|u| u.code == *unit_code.read_value())
         else {
             return;
         };
@@ -181,14 +191,14 @@ fn UnitPreferences(
 
     mview! {
         div class={s::unit_preferences} (
-            h3({unit.read_value().code.clone()})
+            h3({unit_code.clone()})
 
             table class={s::unit_table} (
                 tr(
                     th("Activity")
                     th("Share with")
                 )
-                For each=[unit.get_value().activities]
+                For each=[unit().activities]
                     key={|pref| pref.0.clone()}
                 |(activity, members)| (
                     tr(

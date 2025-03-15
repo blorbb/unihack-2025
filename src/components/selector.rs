@@ -20,7 +20,7 @@ pub fn Selector(
     let set_selected = StoredValue::new(set_selected);
     mview! {
         button class={s::selector}
-            on:click={move |_| show_modal.set(!show_modal())}
+            on:click={move |_| show_modal.set(true)}
         (
             [if show_modal() {
                 mview! {
