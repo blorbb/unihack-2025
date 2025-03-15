@@ -18,7 +18,7 @@ const MUTATIONS: usize = 3;
 
 type Solution = BTreeMap<Username, BTreeMap<UnitCode, BTreeMap<Activity, Class>>>;
 
-type ClassTimes = HashMap<UnitCode, Classes>;
+pub type ClassTimes = HashMap<UnitCode, Classes>;
 
 fn score_solve(users: &HashMap<Username, UserInfo>, solution: &Solution) -> i64 {
     let mut ans: i64 = 0;
@@ -96,13 +96,13 @@ fn random_sol(
         .collect()
 }
 
-pub fn hash_solve(solution: &Solution) -> u64 {
+fn hash_solve(solution: &Solution) -> u64 {
     let mut hasher = DefaultHasher::new();
     solution.hash(&mut hasher);
     hasher.finish()
 }
 
-pub fn new_sol(class_times: &ClassTimes, solution: &Solution, rng: &mut ThreadRng) -> Solution {
+fn new_sol(class_times: &ClassTimes, solution: &Solution, rng: &mut ThreadRng) -> Solution {
     let mut solution = solution.clone();
 
     for _ in 0..MUTATIONS {
