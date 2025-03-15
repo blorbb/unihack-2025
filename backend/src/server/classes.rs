@@ -5,7 +5,7 @@ use itertools::Itertools;
 use num_traits::FromPrimitive;
 use tokio_stream::{StreamExt, wrappers::ReadDirStream};
 
-use crate::{Activity, Class, Classes, UnitCode, UnitInfo};
+use crate::shared::activity::{Activity, Class, Classes, UnitCode, UnitInfo};
 
 fn parse_class(data: &serde_json::Value) -> Option<Option<(Activity, Class)>> {
     let part = data.get("part")?.as_str()?;
@@ -35,7 +35,7 @@ fn parse_class(data: &serde_json::Value) -> Option<Option<(Activity, Class)>> {
 async fn load_unit_classes(file: &Path) -> Result<(UnitCode, UnitInfo, Classes)> {
     let data = serde_json::from_slice::<serde_json::Value>(&tokio::fs::read(file).await?)?;
     let result: Option<(UnitCode, UnitInfo, HashMap<Activity, Vec<Class>>)> = try {
-        let code = data.get("code")?.as_str()?[..6].to_owned();
+        let code = data.get("code")?.as_str()?[..7].to_owned();
         let name = data.get("title")?.as_str()?.to_owned();
         let classes = data
             .get("activity_data")?
