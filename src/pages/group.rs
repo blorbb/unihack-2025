@@ -1,16 +1,28 @@
 use leptos::prelude::*;
-use leptos_router::hooks::use_params_map;
+use leptos_router::{hooks::use_params, params::Params};
 use serde::{Deserialize, Serialize};
+
+#[derive(Params, PartialEq)]
+struct GroupParams {
+    group: Option<String>,
+}
 
 #[component]
 pub fn GroupPage() -> impl IntoView {
-    let params = use_params_map();
-    let group = move || params.read().get("id").unwrap_or_default();
+    let param = use_params::<GroupParams>();
+    let group = move || {
+        param
+            .read()
+            .as_ref()
+            .ok()
+            .and_then(|x| x.group.clone())
+            .unwrap_or_else(|| "testid".to_string())
+    };
     let group_resource = Resource::new(group, async |group| get_group(group).await);
     let group_view = Suspend::new(async move {
         match group_resource.await {
             Ok(Some(g)) => Ok(view! {
-                <h1>{g.name}</h1>
+                <h1>{g.members.clone()}</h1>
                 <ul>{move || {
                     g.members.iter()
                         .map(|mem| view!{<li>{mem.to_owned()}</li>})
@@ -56,5 +68,5 @@ pub enum GetError {
 }
 #[server]
 pub async fn get_group(id: String) -> Result<Option<backend::Group>, ServerFnError> {
-    Ok(backend::get_group(&id))
+    Ok(backend::server::groups::get_group(&id))
 }
