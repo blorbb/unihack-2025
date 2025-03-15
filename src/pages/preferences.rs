@@ -160,7 +160,7 @@ fn UnitPreferences(unit: String, member: RwSignal<Member>) -> impl IntoView {
                 Preference::ShareClass(pref_unit, ..) => unit.read_value() == *pref_unit,
             })
             .map(|pref| match pref {
-                Preference::ShareClass(unit, activity, share_with) => {
+                Preference::ShareClass(_, activity, share_with) => {
                     (activity.clone(), share_with.clone())
                 }
             })
@@ -172,14 +172,17 @@ fn UnitPreferences(unit: String, member: RwSignal<Member>) -> impl IntoView {
             h3({unit.get_value()})
 
             table class={s::unit_table} (
-                th(
-                    td("Activity")
-                    td("Shared with")
+                tr(
+                    th("Activity")
+                    th("Shared with")
                 )
                 For each={unit_preferences}
                     key={|pref| pref.clone()}
                 |pref| (
-                    ""
+                    tr(
+                        td({pref.0})
+                        td({pref.1})
+                    )
                 )
             )
         )
