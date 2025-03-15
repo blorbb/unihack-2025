@@ -123,6 +123,7 @@ pub fn Preferences(
                         _ if query().trim().is_empty() => mview! {
                             div class={s::searched_unit} ("Start typing to search")
                         }.into_any(),
+                        // TODO: what if unit is already selected so it's filtered out and it looks empty
                         Ok(units) if units.is_empty() => mview! {
                             div class={s::searched_unit} ("No units found")
                         }.into_any(),

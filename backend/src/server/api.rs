@@ -97,6 +97,8 @@ pub fn search_units(query: &str) -> Vec<String> {
         return vec![];
     }
 
+    // TODO: fuzzy search
+    // TODO: return unit name
     state::CLASSES
         .keys()
         .filter(|s| s.to_lowercase().starts_with(&query.to_lowercase()))
