@@ -7,7 +7,7 @@ use tap::Tap;
 
 use crate::{
     api,
-    components::{button::ButtonVariant, Button},
+    components::{button::ButtonVariant, Button, MemberNav},
 };
 
 stylance::import_style!(s, "preferences.module.scss");
@@ -98,11 +98,7 @@ pub fn Preferences(
     let add_unit_input = RwSignal::new(String::new());
     mview! {
         h1({member().name})
-
-        ul class={s::member_nav} (
-            li (A href="" ("Preferences"))
-            li (A href="calendar" ("Calendar"))
-        )
+        MemberNav;
 
         h2 ("Units")
 
@@ -115,7 +111,7 @@ pub fn Preferences(
             }
         )
 
-        input type="text" placeholder="Add unit" bind:value={add_unit_input} ()
+        input type="text" placeholder="Add unit" bind:value={add_unit_input};
         Button variant={ButtonVariant::Primary} on:click={move |_| {
             logging::log!("{}", add_unit_input());
 

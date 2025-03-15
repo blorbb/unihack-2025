@@ -1,3 +1,6 @@
+mod calendar;
+pub use calendar::CalendarPage;
+
 mod home;
 pub use home::HomePage;
 
