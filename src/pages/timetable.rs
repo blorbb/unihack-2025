@@ -75,7 +75,6 @@ pub fn TimetablePage() -> impl IntoView {
                         Err(e) => Err(GetError::ServerError(e)),
                         Ok(timetable) => {
                             Ok(mview! {
-                            h1 class={s::header} ({format!("{}’s Timetable", member())})
                                Timetable timetable={timetable};
                             })
                         }

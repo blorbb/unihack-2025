@@ -468,14 +468,18 @@ h3 {
 }
 
 
-.member-nav-6910ffc {
-  display: flex;
-  gap: 1em;
+.layout-6910ffc {
   padding: 5px;
   padding-left: 10px;
   color: var(--color-on-secondary);
   background-color: var(--color-secondary);
 }
+
+.member-nav-6910ffc {
+  display: flex;
+  gap: 1em;
+}
+
 
 .layout-a4d3295 {
   display: grid;
@@ -498,10 +502,7 @@ h3 {
 }
 
 
-.header-3346bf1 {
-    color: var(--color-on-secondary);
-    background-color: var(--color-secondary);
-}
+
 
 $num-hours: 12;
 $grid-width: 0.1%;
@@ -556,9 +557,4 @@ $grid-color: var(--gray-5);
 	font-size: 0.8em;
 	overflow: auto;
 	scrollbar-width: none;
-}
-
-.header-788cd3a {
-	color: var(--color-on-secondary);
-	background-color: var(--color-secondary);
 }
