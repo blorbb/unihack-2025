@@ -12,6 +12,7 @@ derive_more = { version = "2", features = ["full"], optional = true }
 itertools = { version = "0.14", optional = true }
 num-derive = "0.4.2"
 num-traits = "0.2.19"
+rand = { version = "0.9.0", optional = true }
 serde = { version = "1", features = ["derive", "rc"] }
 serde_json = "1.0.140"
 tap = { version = "1", optional = true }
@@ -21,4 +22,4 @@ thiserror = "2.0.12"
 uuid = { version = "1.16.0", features = ["js", "rng", "v4", "v7"] }
 
 [features]
-ssr = ["derive_more", "itertools", "tap", "tokio", "tokio-stream"]
+ssr = ["derive_more", "itertools", "rand", "tap", "tokio", "tokio-stream"]
