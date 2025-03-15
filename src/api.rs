@@ -1,6 +1,17 @@
+use std::collections::BTreeMap;
+
 use leptos::prelude::*;
 
-use backend::{activity::UnitCode, Group, Member};
+use backend::{
+    activity::{Activity, Class, UnitCode},
+    Group, Member,
+};
+
+#[server]
+pub async fn create_group() -> Result<String, ServerFnError> {
+    backend::api::create_group()
+        .map_err(|_| ServerFnError::Response(String::from("TODO create group error")))
+}
 
 #[server]
 pub async fn get_group(id: String) -> Result<Option<Group>, ServerFnError> {
@@ -8,20 +19,26 @@ pub async fn get_group(id: String) -> Result<Option<Group>, ServerFnError> {
 }
 
 #[server]
-pub async fn get_member(group: String, member: String) -> Result<Option<Member>, ServerFnError> {
-    Ok(Some(Member {
-        name: member,
-        units: vec!["FIT1045".into(), "FIT1047".into()],
-        preferences: vec![],
-    }))
+pub async fn add_group_member(group_id: String, member: String) -> Result<(), ServerFnError> {
+    backend::api::add_group_member(&group_id, &member)
+        .map_err(|e| ServerFnError::ServerError(e.to_string()))
 }
 
 #[server]
-pub async fn set_units(
-    group: String,
+pub async fn update_member(group_id: String, member: Member) -> Result<(), ServerFnError> {
+    backend::api::update_member(&group_id, member)
+        .map_err(|e| ServerFnError::ServerError(e.to_string()))
+}
+
+#[server]
+pub async fn search_units(query: String) -> Result<Vec<String>, ServerFnError> {
+    Ok(backend::api::search_units(&query))
+}
+
+pub async fn get_member_calendar(
+    group_id: String,
     member: String,
-    units: Vec<UnitCode>,
-) -> Result<(), ServerFnError> {
-    println!("set units {group} {member} {units:?}");
-    Ok(())
+) -> Result<BTreeMap<UnitCode, BTreeMap<Activity, Class>>, ServerFnError> {
+    backend::api::get_member_calendar(&group_id, &member)
+        .map_err(|e| ServerFnError::ServerError(e.to_string()))
 }
