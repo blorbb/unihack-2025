@@ -1,20 +1,43 @@
 .selector {
-  width: 100%;
   min-height: 1lh;
   height: 100%;
   display: block;
   padding: 0.5rem;
   background-color: var(--color-surface-container-high);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+
+  > span {
+    background-color: var(--color-tertiary-container);
+    color: var(--color-on-tertiary-container);
+    padding: 0.25rem 0.5rem;
+    border-radius: 999rem;
+  }
 }
 
 .modal {
+  background-color: var(--color-surface-container-high);
+  padding: 1rem;
+  display: grid;
+  gap: 1rem;
 }
+
 .modal-heading {
+  display: flex;
+  gap: 1rem;
+
+  button {
+    padding: 0.5rem;
+    border-radius: 999rem;
+  }
 }
 
 .modal-checkboxes {
   display: grid;
+
   input {
     width: unset;
+    margin-right: 1rem;
   }
 }
