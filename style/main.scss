@@ -328,8 +328,14 @@ h3 {
 
 }
 
+
 .home-link-981fdab {
   margin-bottom: 2rem;
+  a {
+    &:hover, &:focus {
+      text-decoration: none;
+    }
+  }
 }
 
 .layout-981fdab {

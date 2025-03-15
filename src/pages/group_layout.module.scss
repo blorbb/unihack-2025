@@ -1,5 +1,10 @@
 .home-link {
   margin-bottom: 2rem;
+  a {
+    &:hover, &:focus {
+      text-decoration: none;
+    }
+  }
 }
 
 .layout {

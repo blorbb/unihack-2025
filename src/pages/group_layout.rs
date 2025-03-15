@@ -59,7 +59,7 @@ pub fn GroupLayout() -> impl IntoView {
 fn GroupList(#[prop(into)] group: Signal<backend::Group>) -> impl IntoView {
     mview! {
         nav class={s::member_list_wrapper} (
-            h1 class={s::home_link} (A href="/" ("Una"))
+            h1 class={s::home_link} (A href="/" ("una 🗓️"))
 
             h2("Group Members")
             ul (
