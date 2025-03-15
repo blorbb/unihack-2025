@@ -48,6 +48,7 @@ pub fn App() -> impl IntoView {
                         Route path={path!("timetable")} view={pages::TimetablePage};
                     )
                 )
+                Route path={path!("/boo")} view={pages::BooPage};
             }
         }
     }

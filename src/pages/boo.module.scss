@@ -1,0 +1,21 @@
+.page-boo {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-areas:
+    "h-create h-join"
+    "i-create i-join";
+  min-height: 100dvh;
+
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "h-create"
+      "i-create"
+      "h-join"
+      "i-join";
+  }
+
+  h2 {
+    font-size: var(--fs-large);
+  }
+}

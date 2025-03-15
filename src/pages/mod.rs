@@ -18,3 +18,6 @@ pub use preferences::PreferencesPage;
 
 mod timetable;
 pub use timetable::TimetablePage;
+
+mod boo;
+pub use boo::BooPage;
