@@ -116,7 +116,7 @@ fn new_sol(class_times: &ClassTimes, solution: &Solution, rng: &mut ThreadRng) -
     solution
 }
 
-pub fn solve(class_times: &ClassTimes, users: &HashMap<Username, UserInfo>) {
+pub fn solve(class_times: &ClassTimes, users: &HashMap<Username, UserInfo>) -> (Solution, i64) {
     let mut rng = rng();
 
     let mut solutions: BTreeMap<(i64, u64), Solution> = BTreeMap::new();
@@ -132,9 +132,19 @@ pub fn solve(class_times: &ClassTimes, users: &HashMap<Username, UserInfo>) {
         while (solutions.len() > POPULATION / 2) {
             solutions.first_entry().unwrap().remove();
         }
-        let solution = new_sol(class_times, solutions.iter().choose(&mut rng).unwrap().1, &mut rng);
-        let score = score_solve(users, &solution);
-        let hash = hash_solve(&solution);
-        solutions.insert((score, hash), solution);
+
+        while (solutions.len() < POPULATION) {
+            let solution = new_sol(
+                class_times,
+                solutions.iter().choose(&mut rng).unwrap().1,
+                &mut rng,
+            );
+            let score = score_solve(users, &solution);
+            let hash = hash_solve(&solution);
+            solutions.insert((score, hash), solution);
+        }
     }
+
+    let best = solutions.pop_last().unwrap();
+    (best.1, best.0.0)
 }

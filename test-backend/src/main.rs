@@ -1,7 +1,10 @@
 use anyhow::Result;
-use backend::server::classes::*;
 use backend::server::solver::{ClassTimes, solve};
+use backend::{UserInfo, Username};
+use std::collections::HashMap;
 use std::path::Path;
+
+type Constraints = HashMap<Username, UserInfo>;
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -12,7 +15,18 @@ async fn main() -> Result<()> {
             .map(|(a, (b, c))| (a, c))
             .collect();
 
-    println!("{classes:?}");
+    let constraints: Constraints = [(
+        "A".to_string(),
+        UserInfo {
+            units: vec!["FIT1045".to_string()],
+            preferences: vec![],
+        },
+    )]
+    .into();
+
+    let solution = solve(&classes, &constraints);
+
+    println!("{:?}", solution);
 
     Ok(())
 }
