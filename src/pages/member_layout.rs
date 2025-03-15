@@ -10,7 +10,7 @@ pub fn MemberLayout() -> impl IntoView {
         div(
             ul class={s::member_nav} (
                 li (A href="" ("Preferences"))
-                li (A href="calendar" ("Calendar"))
+                li (A href="timetable" ("Timetable"))
             )
             Outlet;
         )
