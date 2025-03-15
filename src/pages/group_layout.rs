@@ -38,10 +38,10 @@ pub fn GroupLayout() -> impl IntoView {
                     let group = group_resource.await;
                     let view = match group {
                         Ok(Some(g)) => mview! {
-                            nav(
+                            div class={s::layout} (
                                 GroupList group={g};
+                                main(Outlet;)
                             )
-                            main(Outlet;)
                         },
                         Ok(None) => return Err(GetError::GroupNotFound),
                         Err(e) => return Err(GetError::ServerError)
@@ -56,7 +56,7 @@ pub fn GroupLayout() -> impl IntoView {
 #[component]
 fn GroupList(#[prop(into)] group: Signal<backend::Group>) -> impl IntoView {
     mview! {
-        div class={s::member_list_wrapper} (
+        nav class={s::member_list_wrapper} (
             h2("Group Members")
             ul class={s::member_list} (
                 For
