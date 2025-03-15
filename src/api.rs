@@ -44,3 +44,8 @@ pub async fn get_member_calendar(
     backend::api::get_member_calendar(&group_id, &member)
         .map_err(|e| ServerFnError::ServerError(e.to_string()))
 }
+
+#[server]
+pub async fn get_unit_activities(unit: String) -> Result<Option<Vec<String>>, ServerFnError> {
+    Ok(backend::api::get_activities(&unit))
+}
