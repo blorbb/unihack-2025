@@ -85,7 +85,7 @@ pub fn update_member(group_id: &str, member: Member) -> anyhow::Result<()> {
         .group
         .members
         .iter()
-        .map(|x| x.clone())
+        .cloned()
         .filter(|x| x.name != member.name)
         .collect();
 
@@ -102,7 +102,7 @@ pub fn search_units(query: &str) -> Vec<String> {
     state::CLASSES
         .keys()
         .filter(|s| s.starts_with(query))
-        .map(|s| s.clone())
+        .cloned()
         .collect()
 }
 
@@ -184,7 +184,7 @@ mod state {
 
         Mutex::new(map)
     });
-
-    pub static CLASSES: LazyLock<HashMap<UnitCode, (UnitInfo, Classes)>> =
-        LazyLock::new(|| load_classes(Path::new("./class-data/classes")).unwrap());
+    pub static CLASSES: LazyLock<HashMap<UnitCode, (UnitInfo, Classes)>> = LazyLock::new(|| {
+        load_classes(Path::new("./class-data/classes")).expect("Missing class-data")
+    });
 }
