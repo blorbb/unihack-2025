@@ -60,8 +60,10 @@ fn GroupList(group: GroupInfo) -> impl IntoView {
     let group = StoredValue::new(group);
     mview! {
         nav class={s::member_list_wrapper} (
+            h1 class={s::home_link} (A href="/" ("una 📅"))
+
             h2("Group Members")
-            ul class={s::member_list} (
+            ul (
                 For
                     each=[group.read_value().members.iter().map(|m| m.name.clone()).collect::<Vec<_>>()]
                     key={|member| member.clone()}
@@ -69,7 +71,6 @@ fn GroupList(group: GroupInfo) -> impl IntoView {
                     li class={s::member} (
                         A attr:class={s::member_link} href={urlencoding::encode(&member).into_owned()} (
                             span class={s::member_name} ({member})
-                            span class={s::member_units} ("TODO")
                         )
                     )
                 }

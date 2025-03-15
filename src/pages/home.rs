@@ -11,30 +11,36 @@ pub fn HomePage() -> impl IntoView {
     let join_group = ServerAction::<JoinGroup>::new();
 
     mview! {
-        main class={s::page_home} (
-            h2 class={s::heading_create} ("Create new group")
-            div class={s::form_create} (
-                ActionForm action={create_group} (
-                    Button
-                        variant={ButtonVariant::Primary}
-                        class={s::create_group}
-                        type="submit"
-                    (
-                       "+"
+        div class={s::page_home_wrapper} (
+            header class={s::header} (
+                h1 class={s::title} ("una 📅")
+            )
+
+            main class={s::page_home} (
+                h2 class={s::heading_create} ("Create new group")
+                div class={s::form_create} (
+                    ActionForm action={create_group} (
+                        Button
+                            variant={ButtonVariant::Primary}
+                            class={s::create_group}
+                            type="submit"
+                        (
+                        "+"
+                        )
                     )
                 )
-            )
-            h2 class={s::heading_join} ("Join group")
-            div class={s::form_join} (
-                ActionForm action={join_group} (
-                    input class={s::join_input}
-                        type="search" name="group" placeholder="Group ID";
-                    Button
-                        variant={ButtonVariant::Primary}
-                        class={s::join_button}
-                        type="submit"
-                    (
-                        "Join"
+                h2 class={s::heading_join} ("Join group")
+                div class={s::form_join} (
+                    ActionForm action={join_group} (
+                        input class={s::join_input}
+                            type="search" name="group" placeholder="Group ID";
+                        Button
+                            variant={ButtonVariant::Primary}
+                            class={s::join_button}
+                            type="submit"
+                        (
+                            "Join"
+                        )
                     )
                 )
             )
@@ -44,7 +50,8 @@ pub fn HomePage() -> impl IntoView {
 
 #[server]
 async fn create_group() -> Result<(), ServerFnError> {
-    let group_id = urlencoding::encode("testid");
+    let group_id = backend::api::create_group();
+    let group_id = urlencoding::encode(&group_id);
     leptos_axum::redirect(&format!("/g/{group_id}"));
     Ok(())
 }

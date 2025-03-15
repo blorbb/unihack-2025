@@ -1,3 +1,10 @@
+.layout {
+  padding: 5px;
+  padding-left: 10px;
+  color: var(--color-on-surface-container);
+  background-color: var(--color-surface-container);
+}
+
 .member-nav {
   display: flex;
   gap: 1em;

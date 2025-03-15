@@ -1,3 +1,12 @@
+.home-link {
+  margin-bottom: 2rem;
+  a {
+    &:hover, &:focus {
+      text-decoration: none;
+    }
+  }
+}
+
 .layout {
   display: grid;
   grid-template-columns: 10rem 1fr;
@@ -16,10 +25,9 @@
 }
 
 .member-list-wrapper {
-  background-color: var(--color-surface-container);
-}
-
-.member-list {
+  background-color: var(--violet-2);
+  color: var(--color-on-violet-2);
+  padding: 1em;
 }
 
 .member {
@@ -33,21 +41,17 @@
   padding: 1rem;
 
   &[aria-current="true"] {
-    background-color: var(--color-surface-container-high);
+    background-color: var(--violet-1);
   }
 
   transition: background-color var(--time-transition);
 
   &:hover,
   &:focus {
-    background-color: var(--color-surface-container-high);
+    background-color: var(--violet-1);
   }
 }
 
 .member-name {
   text-decoration: underline;
-}
-
-.member-units {
-  color: var(--color-on-surface-variant);
 }

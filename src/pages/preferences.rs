@@ -109,8 +109,6 @@ pub fn Preferences(
 
     mview! {
         div class={s::page} (
-            h1({member.read().name.clone()})
-
             input class={s::search_units_input}
                 type="text"
                 placeholder="Add unit"

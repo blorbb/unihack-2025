@@ -1,0 +1,3 @@
+[submodule "class-data"]
+	path = class-data
+	url = git@github.com:blorbb/unihack-2025.git

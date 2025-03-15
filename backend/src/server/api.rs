@@ -1,7 +1,4 @@
-use std::{
-    collections::{BTreeMap, hash_map::Entry},
-    str::FromStr,
-};
+use std::{collections::BTreeMap, str::FromStr};
 
 use anyhow::anyhow;
 use serde::{Deserialize, Serialize};
@@ -25,15 +22,11 @@ pub enum GetError {
     ServerError,
 }
 
-// TODO: Give a real Error
-pub fn create_group() -> Result<String, ()> {
+pub fn create_group() -> String {
     let id = Uuid::now_v7();
     let mut groups = state::GROUPS.lock().unwrap(); // Take lock to access inside
-    match groups.entry(id) {
-        Entry::Occupied(_) => return Err(()),
-        Entry::Vacant(x) => x.insert_entry(GroupState::new()),
-    };
-    Ok(id.to_string())
+    groups.insert(id, GroupState::new());
+    id.to_string()
 }
 
 pub fn get_group(id: &str) -> Option<Group> {
@@ -85,13 +78,13 @@ pub fn update_member(group_id: &str, member: Member) -> anyhow::Result<()> {
         .group
         .members
         .iter()
-        .cloned()
         .filter(|x| x.name != member.name)
+        .cloned()
         .collect();
 
     group.group.members.push(member);
 
-    let sol = solve(&*state::CLASSES, &group.group.members).0;
+    let sol = solve(&state::CLASSES, &group.group.members).0;
 
     group.calendar = sol;
 
@@ -112,26 +105,23 @@ pub fn get_member_calendar(
 ) -> anyhow::Result<BTreeMap<UnitCode, BTreeMap<Activity, Class>>> {
     let groups = state::GROUPS.lock().unwrap();
 
-    let groupstate = groups
+    let group_state = groups
         .get(&Uuid::from_str(group_id)?)
         .ok_or(anyhow!("Invalid group id"))?;
 
-    Ok(groupstate.calendar.get(member).cloned().unwrap_or_default())
+    Ok(group_state
+        .calendar
+        .get(member)
+        .cloned()
+        .unwrap_or_default())
 }
 
 pub fn load_classes() {
     let _ = &*state::CLASSES;
 }
 
-pub fn get_activities(unitcode: &str) -> Option<Vec<String>> {
-    Some(
-        state::CLASSES
-            .get(unitcode)?
-            .1
-            .iter()
-            .map(|(k, v)| k.clone())
-            .collect(),
-    )
+pub fn get_activities(unit_code: &str) -> Option<Vec<String>> {
+    Some(state::CLASSES.get(unit_code)?.1.keys().cloned().collect())
 }
 
 #[derive(Debug)]
