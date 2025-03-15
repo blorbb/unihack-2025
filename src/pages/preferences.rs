@@ -197,7 +197,7 @@ fn UnitPreferences(
                 |pref| (
                     tr(
                         td({pref.0})
-                        td({pref.1})
+                        td()
                     )
                 )
             )

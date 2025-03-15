@@ -3,15 +3,18 @@ use std::collections::HashSet;
 use leptos::prelude::*;
 use leptos_mview::mview;
 
-use crate::components::{button::ButtonVariant, Button};
+use crate::{
+    clone_in,
+    components::{button::ButtonVariant, Button},
+};
 
 stylance::import_style!(s, "selector.module.scss");
 
 #[component]
 pub fn Selector(
-    #[prop(into)] options: Signal<Vec<String>>,
-    #[prop(into)] selected: Signal<HashSet<usize>>,
-    #[prop(into)] set_selected: impl Fn(HashSet<usize>) + Clone + Send + Sync + 'static,
+    #[prop(into)] options: Signal<HashSet<String>>,
+    #[prop(into)] selected: Signal<HashSet<String>>,
+    #[prop(into)] set_selected: impl Fn(HashSet<String>) + Clone + Send + Sync + 'static,
 ) -> impl IntoView {
     let show_modal = RwSignal::new(false);
     let set_selected = StoredValue::new(set_selected);
@@ -25,9 +28,9 @@ pub fn Selector(
                 }.into_any()
             } else {
                 options.read()
-                    .iter().enumerate()
-                    .filter(|(i, _)| selected.read().contains(i))
-                    .map(|(_, opt)| mview!(span({opt.clone()})))
+                    .iter()
+                    .filter(|opt| selected.read().contains(&**opt))
+                    .map(|opt| mview!(span({opt.clone()})))
                     .collect_view()
                     .into_any()
             }]
@@ -37,13 +40,13 @@ pub fn Selector(
 
 #[component]
 fn Modal(
-    #[prop(into)] options: Signal<Vec<String>>,
-    #[prop(into)] selected: Signal<HashSet<usize>>,
+    #[prop(into)] options: Signal<HashSet<String>>,
+    #[prop(into)] selected: Signal<HashSet<String>>,
     #[prop(into)] set_selected: StoredValue<
-        impl Fn(HashSet<usize>) + Clone + Send + Sync + 'static,
+        impl Fn(HashSet<String>) + Clone + Send + Sync + 'static,
     >,
 ) -> impl IntoView {
-    let select_all = move || set_selected.get_value()((0..options.read().len()).collect());
+    let select_all = move || set_selected.get_value()(options());
     let select_none = move || set_selected.get_value()(HashSet::new());
 
     mview! {
@@ -58,22 +61,22 @@ fn Modal(
                 ("Deselect all")
             )
             div class={s::modal_checkboxes} (
-                {options.read()
-                    .iter().enumerate()
-                    .map(|(i, opt)| mview! {
+                [options()
+                    .into_iter()
+                    .map(|opt| mview! {
                         label(
                             input type="checkbox"
-                                prop:checked=[selected.read().contains(&i)]
-                                on:input={move |ev| {
+                                prop:checked={clone_in!(opt, move || selected.read().contains(&*opt))}
+                                on:input={clone_in!(opt, move |ev| {
                                     let checked = event_target_checked(&ev);
                                     let mut existing = selected();
-                                    if checked { existing.insert(i); } else { existing.remove(&i); }
+                                    if checked { existing.insert(opt.clone()); } else { existing.remove(&*opt); }
                                     set_selected.get_value()(existing)
-                                }};
+                                })};
                             span({opt.clone()})
                         )
                     })
-                    .collect_view()}
+                    .collect_view()]
             )
         )
     }
