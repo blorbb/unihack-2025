@@ -5,4 +5,4 @@ mod not_found;
 pub use not_found::NotFound;
 
 mod group_layout;
-pub use group_layout::GroupPage;
+pub use group_layout::GroupLayout;

@@ -1,6 +1,10 @@
 use leptos::prelude::*;
 use leptos_mview::mview;
-use leptos_router::{components::A, hooks::use_params, params::Params};
+use leptos_router::{
+    components::{Outlet, A},
+    hooks::use_params,
+    params::Params,
+};
 use serde::{Deserialize, Serialize};
 
 stylance::import_style!(s, "group_layout.module.scss");
@@ -11,7 +15,7 @@ struct GroupParams {
 }
 
 #[component]
-pub fn GroupPage() -> impl IntoView {
+pub fn GroupLayout() -> impl IntoView {
     let param = use_params::<GroupParams>();
     let group = move || {
         param
@@ -34,7 +38,10 @@ pub fn GroupPage() -> impl IntoView {
                     let group = group_resource.await;
                     let view = match group {
                         Ok(Some(g)) => mview! {
-                            GroupList group={g};
+                            nav(
+                                GroupList group={g};
+                            )
+                            main(Outlet;)
                         },
                         Ok(None) => return Err(GetError::GroupNotFound),
                         Err(e) => return Err(GetError::ServerError)
