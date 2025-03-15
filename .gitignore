@@ -14,4 +14,4 @@ Cargo.lock
 *.pdb
 
 # stylance generated files
-/style/stylance/
+/style/

@@ -43,12 +43,12 @@ pub struct UnitInfo {
     pub name: String,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub enum Preference {
     ShareClass(UnitCode, Activity, Username),
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct UserInfo {
     pub units: Vec<UnitCode>,
     pub preferences: Vec<Preference>,
