@@ -13,3 +13,16 @@ pub fn hydrate() {
     console_error_panic_hook::set_once();
     leptos::mount::hydrate_body(App);
 }
+
+#[macro_export]
+macro_rules! clone_in {
+    ($ident:ident, $($tt:tt)*) => {
+        {
+            let $ident = ::std::borrow::ToOwned::to_owned(&$ident);
+            $crate::clone_in!($($tt)*)
+        }
+    };
+    ($($tt:tt)*) => {
+        {$($tt)*}
+    }
+}
