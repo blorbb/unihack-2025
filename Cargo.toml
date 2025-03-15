@@ -17,7 +17,7 @@ leptos_meta = { version = "0.7.0" }
 tokio = { version = "1", features = ["rt-multi-thread"], optional = true }
 wasm-bindgen = { version = "=0.2.100", optional = true }
 stylance = { version = "0.5.5", features = ["nightly"] }
-backend = { path = "./backend", optional = true }
+backend = { path = "./backend" }
 urlencoding = "2"
 thiserror = "2.0.12"
 serde = { version = "1.0.219", features = ["derive"] }
@@ -34,7 +34,7 @@ ssr = [
     "leptos/ssr",
     "leptos_meta/ssr",
     "leptos_router/ssr",
-    "backend",
+    "backend/ssr",
 ]
 
 # Defines a size-optimized profile for the WASM bundle in release mode
