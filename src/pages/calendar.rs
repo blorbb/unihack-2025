@@ -1,4 +1,4 @@
-use std::collections::{BTreeMap, HashMap};
+use std::collections::BTreeMap;
 
 use backend::activity::{Activity, Class, UnitCode, WeekDay};
 use itertools::Itertools;
@@ -7,7 +7,6 @@ use leptos_mview::mview;
 use leptos_router::{hooks::use_params, params::Params};
 use serde::{Deserialize, Serialize};
 use strum::IntoEnumIterator;
-use tap::Tap;
 
 use crate::api;
 
@@ -24,9 +23,17 @@ struct CalendarParams {
     member: String,
 }
 
+// TODO: rename to Timetable
 #[component]
 pub fn CalendarPage() -> impl IntoView {
     let param = use_params::<CalendarParams>();
+    let member = move || {
+        param
+            .read()
+            .as_ref()
+            .map(|params| params.member.clone())
+            .unwrap_or_default()
+    };
     let calendar_resource = Resource::new(
         move || param.read().clone().unwrap_or_default(),
         |CalendarParams { group, member }| api::get_member_calendar(group, member),
@@ -44,7 +51,7 @@ pub fn CalendarPage() -> impl IntoView {
                         Err(e) => Err(GetError::ServerError(e)),
                         Ok(calendar) => {
                             Ok(mview! {
-                            h1({param.read().as_ref().map(|x| x.member.clone()).unwrap_or_default()})
+                            h1({format!("{}’s Timetable", member())})
                                Calendar calendar={calendar};
                             })
                         }
