@@ -62,7 +62,7 @@ fn GroupList(#[prop(into)] group: Signal<backend::Group>) -> impl IntoView {
             h1 class={s::home_link} (A href="/" ("Una"))
 
             h2("Group Members")
-            ul class={s::member_list} (
+            ul (
                 For
                     each=[group.read().members.iter().map(|m| m.name.clone()).collect::<Vec<_>>()]
                     key={|member| member.clone()}
