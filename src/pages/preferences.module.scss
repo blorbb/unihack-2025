@@ -1,13 +1,19 @@
 .page {
   padding: 1rem;
+
+  > * + * {
+    margin-top: 1rem;
+  }
 }
 
 .search-units-input {
-  padding: 1rem;
+  padding: 0.5em;
+  border: 2px solid var(--color-primary);
 }
 
 .searched-units {
   background-color: var(--color-surface-container);
+  min-height: 1rem;
   max-height: 8rem;
   overflow: auto;
 
@@ -22,11 +28,18 @@
 }
 
 .preferences {
+  display: grid;
+  gap: 1rem;
 }
 
 .unit-preferences {
+  background-color: var(--color-surface-container);
 }
 
 .unit-table {
   width: 100%;
+
+  th:nth-child(1) {
+    width: 30%;
+  }
 }

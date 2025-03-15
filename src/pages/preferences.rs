@@ -190,7 +190,7 @@ fn UnitPreferences(
             table class={s::unit_table} (
                 tr(
                     th("Activity")
-                    th("Shared with")
+                    th("Share with")
                 )
                 For each={unit_preferences}
                     key={|pref| pref.clone()}
