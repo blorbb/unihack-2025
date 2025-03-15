@@ -491,8 +491,15 @@ h3 {
 
 .searched-units-3346bf1 {
   background-color: var(--color-surface-container);
-  min-height: 5rem;
+  max-height: 8rem;
+  overflow: auto;
+
+  > li {
+    display: grid;
+  }
 }
 
 .searched-unit-3346bf1 {
+  padding: 0.5rem;
+  text-align: start;
 }

@@ -104,31 +104,29 @@ pub fn Preferences(
             ul class={s::searched_units} (
                 Transition fallback=["Loading..."]
                 (
-                    [Suspend::new(async move {
-                        match units.await {
-                            Ok(units) => mview! {
-                                For
-                                    each=[
-                                        units.iter()
-                                            .filter(|unit| !member.read().units.contains(unit))
-                                            .cloned()
-                                            .collect::<Vec<_>>()
-                                    ]
-                                    key={String::clone}
-                                |unit| {
-                                    li(
-                                        button class={s::searched_unit}
-                                            on:click={
-                                                let unit = unit.clone();
-                                                move |_| add_unit(unit.clone())
-                                            }
-                                        ({unit})
-                                    )
-                                }
-                            }.into_any(),
-                            Err(e) => format!("Oops, something went wrong.\n{e}").into_any()
-                        }
-                    })]
+                    [Suspend::new(async move { match units.await {
+                        Ok(units) => mview! {
+                            For
+                                each=[
+                                    units.iter()
+                                        .filter(|unit| !member.read().units.contains(unit))
+                                        .cloned()
+                                        .collect::<Vec<_>>()
+                                ]
+                                key={String::clone}
+                            |unit| {
+                                li(
+                                    button class={s::searched_unit}
+                                        on:click={
+                                            let unit = unit.clone();
+                                            move |_| add_unit(unit.clone())
+                                        }
+                                    ({unit})
+                                )
+                            }
+                        }.into_any(),
+                        Err(e) => format!("Oops, something went wrong.\n{e}").into_any()
+                    }})]
                 )
             )
 

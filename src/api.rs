@@ -32,6 +32,7 @@ pub async fn update_member(group_id: String, member: Member) -> Result<(), Serve
 
 #[server]
 pub async fn search_units(query: String) -> Result<Vec<String>, ServerFnError> {
+    println!("searching with {query}");
     Ok(backend::api::search_units(&query))
 }
 
