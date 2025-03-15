@@ -1,4 +1,4 @@
-use backend::{Member, UnitCode, UserInfo};
+use backend::{activity::UnitCode, Member};
 use leptos::{logging, prelude::*};
 use leptos_mview::mview;
 use leptos_router::{components::A, hooks::use_params, params::Params};
@@ -36,24 +36,24 @@ pub fn PreferencesPage() -> impl IntoView {
             .unwrap_or_default()
     };
 
-    let member_preferences = ServerAction::<api::GetMember>::new();
+    let get_member = ServerAction::<api::GetMember>::new();
     let set_units = ServerAction::<api::SetUnits>::new();
 
-    let add_unit = move |unit, info: UserInfo| {
+    let add_unit = move |unit, member: Member| {
         set_units.dispatch(api::SetUnits {
             group: group(),
-            member: member(),
-            units: info.units.tap_mut(|units| units.push(unit)),
+            member: member.name.clone(),
+            units: member.units.tap_mut(|units| units.push(unit)),
         });
-        member_preferences.dispatch(api::GetMember {
+        get_member.dispatch(api::GetMember {
             group: group(),
-            member: member(),
+            member: member.name.clone(),
         });
     };
 
     // refresh member preferences everon every group/member change
     Effect::new(move || {
-        member_preferences.dispatch(api::GetMember {
+        get_member.dispatch(api::GetMember {
             group: group(),
             member: member(),
         });
@@ -67,20 +67,20 @@ pub fn PreferencesPage() -> impl IntoView {
                 fallback={|err| mview! { "Oops!" f["{:#?}", err()] }}
             (
                 [Suspend::new(async move {
-                    let Some(info) = member_preferences.value()() else {
+                    let Some(member) = get_member.value()() else {
                         return Ok(mview! {
                             "Loading..."
                         }.into_any())
                     };
-                    match info {
+                    match member {
                         Err(_) => Err(GetError::ServerError),
                         Ok(None) => Err(GetError::MemberNotFound),
-                        Ok(Some(info)) => {
-                            let info2 = info.clone();
+                        Ok(Some(member)) => {
+                            let member2 = member.clone();
                             Ok(mview! {
                                 Preferences
-                                    add_unit={move |unit| add_unit(unit, info.clone())}
-                                    member={member()} info={info2};
+                                    add_unit={move |unit| add_unit(unit, member.clone())}
+                                    member={member2};
                             }.into_any())
                         }
                     }
@@ -93,12 +93,11 @@ pub fn PreferencesPage() -> impl IntoView {
 #[component]
 pub fn Preferences(
     add_unit: impl Fn(UnitCode) + 'static,
-    #[prop(into)] member: Member,
-    #[prop(into)] info: Signal<UserInfo>,
+    #[prop(into)] member: Signal<Member>,
 ) -> impl IntoView {
     let add_unit_input = RwSignal::new(String::new());
     mview! {
-        h1({member})
+        h1({member().name})
 
         ul class={s::member_nav} (
             li (A href="" ("Preferences"))
@@ -109,7 +108,7 @@ pub fn Preferences(
 
         ul (
             For
-                each=[info().units.clone()]
+                each=[member().units.clone()]
                 key={String::clone}
             |unit| {
                 li ({unit})

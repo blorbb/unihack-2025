@@ -1,15 +1,16 @@
 use leptos::prelude::*;
 
-use backend::{Group, UnitCode, UserInfo};
+use backend::{activity::UnitCode, Group, Member};
 
 #[server]
 pub async fn get_group(id: String) -> Result<Option<Group>, ServerFnError> {
-    Ok(backend::server::groups::get_group(&id))
+    Ok(backend::api::get_group(&id))
 }
 
 #[server]
-pub async fn get_member(group: String, member: String) -> Result<Option<UserInfo>, ServerFnError> {
-    Ok(Some(UserInfo {
+pub async fn get_member(group: String, member: String) -> Result<Option<Member>, ServerFnError> {
+    Ok(Some(Member {
+        name: member,
         units: vec!["FIT1045".into(), "FIT1047".into()],
         preferences: vec![],
     }))

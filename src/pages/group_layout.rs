@@ -46,7 +46,7 @@ pub fn GroupLayout() -> impl IntoView {
                             )
                         },
                         Ok(None) => return Err(GetError::GroupNotFound),
-                        Err(e) => return Err(GetError::ServerError)
+                        Err(_) => return Err(GetError::ServerError)
                     };
                     Ok(view)
                 })]
@@ -62,7 +62,7 @@ fn GroupList(#[prop(into)] group: Signal<backend::Group>) -> impl IntoView {
             h2("Group Members")
             ul class={s::member_list} (
                 For
-                    each=[group.read().members.clone()]
+                    each=[group.read().members.iter().map(|m| m.name.clone()).collect::<Vec<_>>()]
                     key={|member| member.clone()}
                 |member| {
                     li class={s::member} (
