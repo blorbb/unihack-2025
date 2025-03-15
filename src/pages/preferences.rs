@@ -1,8 +1,11 @@
-use backend::UserInfo;
-use leptos::prelude::*;
+use backend::{Member, UnitCode, UserInfo};
+use leptos::{logging, prelude::*};
 use leptos_mview::mview;
 use leptos_router::{components::A, hooks::use_params, params::Params};
 use serde::{Deserialize, Serialize};
+use tap::Tap;
+
+use crate::components::{button::ButtonVariant, Button};
 
 stylance::import_style!(s, "preferences.module.scss");
 
@@ -21,8 +24,25 @@ pub fn PreferencesPage() -> impl IntoView {
             .map(|params| params.member.clone())
             .unwrap_or_default()
     };
-    let member_resource = Resource::new(member, |member| {
-        get_member("00000000-0000-0000-0000-000000000000".to_owned(), member)
+
+    let get_info = ServerAction::<GetMember>::new();
+    let set_units = ServerAction::<SetUnits>::new();
+
+    let add_unit = move |unit, info: UserInfo| {
+        set_units.dispatch(SetUnits {
+            group: "00000000-0000-0000-0000-000000000000".to_owned(),
+            member: member(),
+            units: info.units.tap_mut(|units| units.push(unit)),
+        });
+        get_info.dispatch(GetMember {
+            group: "00000000-0000-0000-0000-000000000000".to_owned(),
+            member: member(),
+        });
+    };
+
+    get_info.dispatch(GetMember {
+        group: "00000000-0000-0000-0000-000000000000".to_owned(),
+        member: member(),
     });
 
     mview! {
@@ -33,12 +53,19 @@ pub fn PreferencesPage() -> impl IntoView {
                 fallback={|err| mview! { "Oops!" f["{:#?}", err()] }}
             (
                 [Suspend::new(async move {
-                    let member = member_resource.await;
-                    Ok(match member {
-                        Ok(Some(m)) => mview! { Preferences member={m}; },
-                        Ok(None) => return Err(GetError::MemberNotFound),
-                        Err(_) => return Err(GetError::ServerError)
-                    })
+                    let Some(info) = get_info.value()() else {
+                        return Ok(mview! {
+                            "Loading..."
+                        }.into_any())
+                    };
+                    match info {
+                        Err(_) => Err(GetError::ServerError),
+                        Ok(None) => Err(GetError::MemberNotFound),
+                        Ok(Some(info)) => {
+                            let info2 = info.clone();
+                            Ok(mview! {Preferences add_unit={move |unit| add_unit(unit, info.clone())} member={member()} info={info2}; }.into_any())
+                        }
+                    }
                 })]
             )
         )
@@ -46,7 +73,12 @@ pub fn PreferencesPage() -> impl IntoView {
 }
 
 #[component]
-pub fn Preferences(#[prop(into)] member: Signal<UserInfo>) -> impl IntoView {
+pub fn Preferences(
+    add_unit: impl Fn(UnitCode) + 'static,
+    #[prop(into)] member: Member,
+    #[prop(into)] info: Signal<UserInfo>,
+) -> impl IntoView {
+    let add_unit_input = RwSignal::new(String::new());
     mview! {
         nav (
             ul class={s::member_nav} (
@@ -54,6 +86,26 @@ pub fn Preferences(#[prop(into)] member: Signal<UserInfo>) -> impl IntoView {
                 li (A href="calendar" ("Calendar"))
             )
         )
+
+        h2 ("Units")
+
+        ul (
+            For
+                each=[info().units.clone()]
+                key={String::clone}
+            |unit| {
+                li ({unit})
+            }
+        )
+
+        input type="text" placeholder="Add unit" bind:value={add_unit_input} ()
+        Button variant={ButtonVariant::Primary} on:click={move |_| {
+            logging::log!("{}", add_unit_input());
+
+            add_unit(add_unit_input());
+        }} ("+")
+
+        h2 ("Preferences")
     }
 }
 
@@ -68,7 +120,17 @@ pub enum GetError {
 #[server]
 pub async fn get_member(group: String, member: String) -> Result<Option<UserInfo>, ServerFnError> {
     Ok(Some(UserInfo {
-        units: vec![],
+        units: vec!["FIT1045".into(), "FIT1047".into()],
         preferences: vec![],
     }))
+}
+
+#[server]
+pub async fn set_units(
+    group: String,
+    member: String,
+    units: Vec<UnitCode>,
+) -> Result<(), ServerFnError> {
+    println!("set units {group} {member} {units:?}");
+    Ok(())
 }

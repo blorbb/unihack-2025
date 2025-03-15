@@ -21,6 +21,7 @@ backend = { path = "./backend" }
 urlencoding = "2"
 thiserror = "2.0.12"
 serde = { version = "1.0.219", features = ["derive"] }
+tap = "1"
 
 [workspace]
 members = ["backend", "test-backend"]
