@@ -1,10 +1,18 @@
-use std::{collections::hash_map::Entry, str::FromStr};
+use std::{
+    collections::{BTreeMap, hash_map::Entry},
+    str::FromStr,
+};
 
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
 use uuid::Uuid;
 
-use crate::{Member, TESTING, groups::Group, members};
+use crate::{
+    Member, TESTING,
+    activity::{Activity, Class, UnitCode},
+    groups::Group,
+    members,
+};
 
 #[derive(thiserror::Error, Debug, Copy, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub enum GetError {
@@ -57,8 +65,11 @@ pub fn get_member_preferences() {
     todo!()
 }
 
-pub fn get_member_calendar() {
-    todo!()
+pub fn get_member_calendar(
+    _group_id: &str,
+    _member_name: &str,
+) -> BTreeMap<UnitCode, BTreeMap<Activity, Class>> {
+    serde_json::from_str(r#"{"FIT1045":{"Applied":{"day":"Friday","code":"10_OnCampus","start":600,"end":720},"PASS-Optional":{"day":"Tuesday","code":"01_OnCampus","start":960,"end":1020},"Workshop-JTA":{"day":"Thursday","code":"03_OnCampus","start":480,"end":600}},"FIT1047":{"Applied":{"day":"Thursday","code":"17_OnCampus","start":960,"end":1080},"PASS-Optional":{"day":"Wednesday","code":"01_OnCampus","start":900,"end":960},"Workshop":{"day":"Friday","code":"01_OnCampus","start":720,"end":840}},"MAT1830":{"Applied":{"day":"Friday","code":"11_OnCampus","start":840,"end":960},"Seminar_1":{"day":"Tuesday","code":"02_OnCampus","start":780,"end":840},"Seminar_2":{"day":"Thursday","code":"01_OnlineRealTIme","start":840,"end":900},"Seminar_3":{"day":"Friday","code":"01_OnCampus","start":960,"end":1020}},"MTH1030":{"Applied":{"day":"Friday","code":"01_OnCampus","start":480,"end":600},"Seminar_1-JTA":{"day":"Thursday","code":"01_OnCampus","start":600,"end":720},"Seminar_2-JTA":{"day":"Thursday","code":"01_OnCampus","start":780,"end":840}}}"#).unwrap()
 }
 
 mod state {

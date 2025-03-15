@@ -1,11 +1,14 @@
 use std::collections::HashMap;
 
 use num_derive::FromPrimitive;
+use serde::{Deserialize, Serialize};
 
 pub type UnitCode = String;
 pub type Activity = String;
 
-#[derive(Clone, Copy, Debug, Hash, PartialEq, Eq, PartialOrd, Ord, FromPrimitive)]
+#[derive(
+    Clone, Copy, Debug, Hash, PartialEq, Eq, PartialOrd, Ord, FromPrimitive, Serialize, Deserialize,
+)]
 pub enum WeekDay {
     Monday,
     Tuesday,
@@ -14,7 +17,7 @@ pub enum WeekDay {
     Friday,
 }
 
-#[derive(Clone, Hash, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Hash, Debug, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
 pub struct Class {
     pub day: WeekDay,
     pub code: String,

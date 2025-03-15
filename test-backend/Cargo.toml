@@ -7,3 +7,5 @@ edition = "2024"
 anyhow = "1.0.97"
 backend = { path = "../backend", features = ["ssr"] }
 tokio = { version = "1", features = ["full"] }
+serde = { version = "1", features = ["derive", "rc"] }
+serde_json = "1.0.140"

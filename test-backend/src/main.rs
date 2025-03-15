@@ -87,7 +87,7 @@ async fn main() -> Result<()> {
 
     let solution = solve(&classes, &members);
 
-    println!("{:#?}", solution.1);
+    println!("{}", serde_json::to_string(&solution.0["a"]).unwrap());
 
     Ok(())
 }
