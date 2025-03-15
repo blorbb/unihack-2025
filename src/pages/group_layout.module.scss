@@ -41,15 +41,15 @@
   text-decoration: none;
   padding: 1rem;
 
-  &[aria-current="true"] {
-    background-color: var(--violet-1);
+  &[aria-current="page"] {
+    background-color: var(--violet-0);
   }
 
   transition: background-color var(--time-transition);
 
   &:hover,
   &:focus {
-    background-color: var(--violet-1);
+    background-color: var(--violet-0);
   }
 }
 
