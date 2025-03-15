@@ -17,6 +17,12 @@ const START_TIME: u16 = 8 * 60;
 /// 10 pm
 const END_TIME: u16 = 20 * 60;
 
+fn format_time(time: u16) -> String {
+    let hrs = time / 60;
+    let mins = time % 60;
+    format!("{hrs:02}:{mins:02}")
+}
+
 #[derive(Params, Clone, Default, PartialEq)]
 struct CalendarParams {
     group: String,
@@ -63,7 +69,7 @@ pub fn CalendarPage() -> impl IntoView {
 }
 
 #[component]
-pub fn Calendar(calendar: BTreeMap<UnitCode, BTreeMap<Activity, Class>>) -> impl IntoView {
+fn Calendar(calendar: BTreeMap<UnitCode, BTreeMap<Activity, Class>>) -> impl IntoView {
     let classes = StoredValue::new(
         calendar
             .into_iter()
@@ -102,15 +108,21 @@ pub fn Calendar(calendar: BTreeMap<UnitCode, BTreeMap<Activity, Class>>) -> impl
 pub fn Class(
     #[prop(name = "class")] (unit, activity, class): (UnitCode, Activity, Class),
 ) -> impl IntoView {
+    let top = (class.start - START_TIME) as f32 / (END_TIME - START_TIME) as f32 * 100.0;
+    let height = (class.end - class.start) as f32 / (END_TIME - START_TIME) as f32 * 100.0;
     mview! {
-        div (
-            p ({format!("{unit} {activity}: {class:?}")})
+        div class={s::class} style:top=f["{}%", top] style:height=f["{}%", height] (
+            div class={s::class_inner} (
+                strong ({format!("{unit} {activity}")})
+                {class.code}
+                {format!("{} – {}", format_time(class.start), format_time(class.end))}
+            )
         )
     }
 }
 
 #[derive(thiserror::Error, Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub enum GetError {
+enum GetError {
     #[error("User not found.")]
     MemberNotFound,
     #[error("{0}")]
