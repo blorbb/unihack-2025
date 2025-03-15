@@ -274,6 +274,15 @@ h3 {
   --red-3: #ffa8a8;
   --grape-3: #e599f7;
   --pink-3: #faa2c1;
+  --violet-0: #f3f0ff;
+  --violet-1: #e5dbff;
+  --violet-2: #d0bfff;
+  --color-on-violet-2: #271756;
+  --gray-0: #f8f9fa;
+  --gray-1: #f1f3f5;
+  --gray-2: #e9ecef;
+  --gray-3: #dee2e6;
+  --gray-4: #ced4da;
   --gray-5: #adb5bd;
 
   --color-primary: rgb(48 98 140);
@@ -356,7 +365,8 @@ h3 {
 }
 
 .member-list-wrapper-981fdab {
-  background-color: var(--color-surface-container);
+  background-color: var(--violet-2);
+  color: var(--color-on-violet-2);
   padding: 1em;
 }
 
@@ -371,14 +381,14 @@ h3 {
   padding: 1rem;
 
   &[aria-current="true"] {
-    background-color: var(--color-surface-container-high);
+    background-color: var(--violet-1);
   }
 
   transition: background-color var(--time-transition);
 
   &:hover,
   &:focus {
-    background-color: var(--color-surface-container-high);
+    background-color: var(--violet-1);
   }
 }
 
@@ -387,13 +397,30 @@ h3 {
 }
 
 
+.page-home-wrapper-c6e7cb7 {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+}
+
+.header-c6e7cb7 {
+  background: var(--violet-2);
+  color: var(--color-on-violet-2);
+}
+
+.title-c6e7cb7 {
+  font-size: 4rem;
+  text-align: center;
+  margin: 4rem 0rem;
+}
+
 .page-home-c6e7cb7 {
+  flex-grow: 1;
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   grid-template-areas:
     "h-create h-join"
     "i-create i-join";
-  min-height: 100dvh;
 
   @media (max-width: 600px) {
     grid-template-columns: 1fr;
@@ -426,7 +453,7 @@ h3 {
 
 .heading-join-c6e7cb7,
 .form-join-c6e7cb7 {
-  background-color: var(--color-surface-container);
+  background: var(--color-surface-container);
 }
 
 .form-create-c6e7cb7,
@@ -434,10 +461,6 @@ h3 {
   display: grid;
   align-items: start;
   justify-content: center;
-}
-
-.form-create-c6e7cb7,
-.form-join-c6e7cb7 {
   padding: 1rem;
 }
 
@@ -473,8 +496,8 @@ h3 {
 .layout-6910ffc {
   padding: 5px;
   padding-left: 10px;
-  color: var(--color-on-secondary);
-  background-color: var(--color-secondary);
+  color: var(--color-on-surface-container);
+  background-color: var(--color-surface-container);
 }
 
 .member-nav-6910ffc {
