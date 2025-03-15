@@ -85,7 +85,7 @@ pub fn update_member(group_id: &str, member: Member) -> anyhow::Result<()> {
         .group
         .members
         .iter()
-        .map(|x| x.clone())
+        .cloned()
         .filter(|x| x.name != member.name)
         .collect();
 
@@ -102,7 +102,7 @@ pub fn search_units(query: &str) -> Vec<String> {
     state::CLASSES
         .keys()
         .filter(|s| s.starts_with(query))
-        .map(|s| s.clone())
+        .cloned()
         .collect()
 }
 
@@ -119,15 +119,19 @@ pub fn get_member_calendar(
     Ok(groupstate.calendar.get(member).cloned().unwrap_or_default())
 }
 
-pub fn get_fake_calendar(
-    group_id: &str,
-    member: &str,
-) -> anyhow::Result<BTreeMap<UnitCode, BTreeMap<Activity, Class>>> {
-    Ok(serde_json::from_str(r#"{"FIT1045":{"Applied":{"day":"Friday","code":"10_OnCampus","start":600,"end":720},"PASS-Optional":{"day":"Tuesday","code":"01_OnCampus","start":960,"end":1020},"Workshop-JTA":{"day":"Thursday","code":"03_OnCampus","start":480,"end":600}},"FIT1047":{"Applied":{"day":"Thursday","code":"17_OnCampus","start":960,"end":1080},"PASS-Optional":{"day":"Wednesday","code":"01_OnCampus","start":900,"end":960},"Workshop":{"day":"Friday","code":"01_OnCampus","start":720,"end":840}},"MAT1830":{"Applied":{"day":"Friday","code":"11_OnCampus","start":840,"end":960},"Seminar_1":{"day":"Tuesday","code":"02_OnCampus","start":780,"end":840},"Seminar_2":{"day":"Thursday","code":"01_OnlineRealTIme","start":840,"end":900},"Seminar_3":{"day":"Friday","code":"01_OnCampus","start":960,"end":1020}},"MTH1030":{"Applied":{"day":"Friday","code":"01_OnCampus","start":480,"end":600},"Seminar_1-JTA":{"day":"Thursday","code":"01_OnCampus","start":600,"end":720},"Seminar_2-JTA":{"day":"Thursday","code":"01_OnCampus","start":780,"end":840}}}"#).unwrap())
-}
-
 pub fn load_classes() {
     let _ = &*state::CLASSES;
+}
+
+pub fn get_activities(unitcode: &str) -> Option<Vec<String>> {
+    Some(
+        state::CLASSES
+            .get(unitcode)?
+            .1
+            .iter()
+            .map(|(k, v)| k.clone())
+            .collect(),
+    )
 }
 
 #[derive(Debug)]
@@ -160,8 +164,27 @@ mod state {
 
     use super::*;
     type MHashMap<K, V> = Mutex<HashMap<K, V>>;
-    pub static GROUPS: LazyLock<MHashMap<Uuid, GroupState>> =
-        LazyLock::new(|| Mutex::new(HashMap::<_, _>::new()));
-    pub static CLASSES: LazyLock<HashMap<UnitCode, (UnitInfo, Classes)>> =
-        LazyLock::new(|| load_classes(Path::new("./class-data/classes")).unwrap());
+    pub static GROUPS: LazyLock<MHashMap<Uuid, GroupState>> = LazyLock::new(|| {
+        let mut map = HashMap::<_, _>::new();
+
+        if TESTING {
+            let mut group_state = GroupState::new();
+
+            group_state.group.members.extend(
+                vec!["bobr", "cat", "car"]
+                    .into_iter()
+                    .map(Member::new)
+                    .collect::<Vec<_>>(),
+            );
+
+            group_state.calendar = [("bobr".to_string(),serde_json::from_str(r#"{"FIT1045":{"Applied":{"day":"Friday","code":"10_OnCampus","start":600,"end":720},"PASS-Optional":{"day":"Tuesday","code":"01_OnCampus","start":960,"end":1020},"Workshop-JTA":{"day":"Thursday","code":"03_OnCampus","start":480,"end":600}},"FIT1047":{"Applied":{"day":"Thursday","code":"17_OnCampus","start":960,"end":1080},"PASS-Optional":{"day":"Wednesday","code":"01_OnCampus","start":900,"end":960},"Workshop":{"day":"Friday","code":"01_OnCampus","start":720,"end":840}},"MAT1830":{"Applied":{"day":"Friday","code":"11_OnCampus","start":840,"end":960},"Seminar_1":{"day":"Tuesday","code":"02_OnCampus","start":780,"end":840},"Seminar_2":{"day":"Thursday","code":"01_OnlineRealTIme","start":840,"end":900},"Seminar_3":{"day":"Friday","code":"01_OnCampus","start":960,"end":1020}},"MTH1030":{"Applied":{"day":"Friday","code":"01_OnCampus","start":480,"end":600},"Seminar_1-JTA":{"day":"Thursday","code":"01_OnCampus","start":600,"end":720},"Seminar_2-JTA":{"day":"Thursday","code":"01_OnCampus","start":780,"end":840}}}"#).unwrap())].into();
+
+            map.insert(Uuid::nil(), group_state);
+        }
+
+        Mutex::new(map)
+    });
+    pub static CLASSES: LazyLock<HashMap<UnitCode, (UnitInfo, Classes)>> = LazyLock::new(|| {
+        load_classes(Path::new("./class-data/classes")).expect("Missing class-data")
+    });
 }

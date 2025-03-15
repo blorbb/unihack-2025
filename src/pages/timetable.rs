@@ -10,7 +10,7 @@ use strum::IntoEnumIterator;
 
 use crate::api;
 
-stylance::import_style!(s, "calendar.module.scss");
+stylance::import_style!(s, "timetable.module.scss");
 
 /// 8 am
 const START_TIME: u16 = 8 * 60;
@@ -24,15 +24,15 @@ fn format_time(time: u16) -> String {
 }
 
 #[derive(Params, Clone, Default, PartialEq)]
-struct CalendarParams {
+struct TimetableParams {
     group: String,
     member: String,
 }
 
 // TODO: rename to Timetable
 #[component]
-pub fn CalendarPage() -> impl IntoView {
-    let param = use_params::<CalendarParams>();
+pub fn TimetablePage() -> impl IntoView {
+    let param = use_params::<TimetableParams>();
     let member = move || {
         param
             .read()
@@ -40,9 +40,9 @@ pub fn CalendarPage() -> impl IntoView {
             .map(|params| params.member.clone())
             .unwrap_or_default()
     };
-    let calendar_resource = Resource::new(
+    let timetable_resource = Resource::new(
         move || param.read().clone().unwrap_or_default(),
-        |CalendarParams { group, member }| api::get_member_calendar(group, member),
+        |TimetableParams { group, member }| api::get_member_calendar(group, member),
     );
 
     mview! {
@@ -53,12 +53,12 @@ pub fn CalendarPage() -> impl IntoView {
                 fallback={|err| mview! { "Oops!" f["{:#?}", err()] }}
             (
                 [Suspend::new(async move {
-                    match calendar_resource.await {
+                    match timetable_resource.await {
                         Err(e) => Err(GetError::ServerError(e)),
-                        Ok(calendar) => {
+                        Ok(timetable) => {
                             Ok(mview! {
                             h1({format!("{}’s Timetable", member())})
-                               Calendar calendar={calendar};
+                               Timetable timetable={timetable};
                             })
                         }
                     }
@@ -69,9 +69,9 @@ pub fn CalendarPage() -> impl IntoView {
 }
 
 #[component]
-fn Calendar(calendar: BTreeMap<UnitCode, BTreeMap<Activity, Class>>) -> impl IntoView {
+fn Timetable(timetable: BTreeMap<UnitCode, BTreeMap<Activity, Class>>) -> impl IntoView {
     let classes = StoredValue::new(
-        calendar
+        timetable
             .into_iter()
             .flat_map(|(unit, classes)| {
                 classes
@@ -82,7 +82,7 @@ fn Calendar(calendar: BTreeMap<UnitCode, BTreeMap<Activity, Class>>) -> impl Int
     );
 
     mview! {
-        div class={s::calendar} (
+        div class={s::timetable} (
             For
                 each=[WeekDay::iter()]
                 key={WeekDay::clone}
