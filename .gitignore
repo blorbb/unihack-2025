@@ -13,5 +13,5 @@ Cargo.lock
 # MSVC Windows builds of rustc generate these, which store debugging information
 *.pdb
 
-# stylance generated files
-/style/
+# style/main.scss can't be ignored
+# as it gets ignored by cargo leptos and won't hot reload
