@@ -22,7 +22,7 @@ pub fn GroupPage() -> impl IntoView {
     let group_view = Suspend::new(async move {
         match group_resource.await {
             Ok(Some(g)) => Ok(view! {
-                <h1>{g.name}</h1>
+                <h1>{g.members.clone()}</h1>
                 <ul>{move || {
                     g.members.iter()
                         .map(|mem| view!{<li>{mem.to_owned()}</li>})
@@ -68,5 +68,5 @@ pub enum GetError {
 }
 #[server]
 pub async fn get_group(id: String) -> Result<Option<backend::Group>, ServerFnError> {
-    Ok(backend::get_group(&id))
+    Ok(backend::server::groups::get_group(&id))
 }
