@@ -13,7 +13,7 @@ fn parse_class(data: &serde_json::Value) -> Option<(Activity, Class)> {
     }
 
     let activity = data.get("type")?.as_str()?.to_owned();
-    if activity == "PASS-Optional" {
+    if activity.starts_with("PASS-Optional") {
         return None;
     }
     let day = FromPrimitive::from_u64(data.get("day")?.as_u64()?)?;
