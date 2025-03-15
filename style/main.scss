@@ -34,39 +34,6 @@
 }
 
 
-.calendar-c500e2d {
-	display: grid;
-	grid-template-columns: repeat(5, 1fr);
-}
-
-.day-c500e2d {
-	text-align: center;
-}
-
-.day_schedule-c500e2d {
-	position: relative;
-	height: 12 * 70px;
-}
-
-.class-c500e2d {
-	position: absolute;
-	width: 100%;
-	padding: 1px;
-}
-
-.class-inner-c500e2d {
-	background: #777;
-	height: 100%;
-	display: flex;
-	flex-direction: column;
-	font-size: 0.8em;
-	padding-left: 5px;
-  padding-top: 3px;
-	border-radius: .25rem;
-	overflow: auto;
-}
-
-
 // a reset //
 
 :root {
@@ -512,3 +479,36 @@ h3 {
 }
 
 
+
+
+.timetable-788cd3a {
+	display: grid;
+	grid-template-columns: repeat(5, 1fr);
+}
+
+.day-788cd3a {
+	text-align: center;
+}
+
+.day_schedule-788cd3a {
+	position: relative;
+	height: 12 * 70px;
+}
+
+.class-788cd3a {
+	position: absolute;
+	width: 100%;
+	padding: 1px;
+}
+
+.class-inner-788cd3a {
+	background: #777;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	font-size: 0.8em;
+	padding-left: 5px;
+  padding-top: 3px;
+	border-radius: .25rem;
+	overflow: auto;
+}

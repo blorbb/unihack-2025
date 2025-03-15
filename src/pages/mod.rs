@@ -1,6 +1,3 @@
-mod calendar;
-pub use calendar::CalendarPage;
-
 mod home;
 pub use home::HomePage;
 
@@ -18,3 +15,6 @@ pub use no_member_selected::NoMemberSelected;
 
 mod preferences;
 pub use preferences::PreferencesPage;
+
+mod timetable;
+pub use timetable::TimetablePage;

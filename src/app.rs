@@ -45,7 +45,7 @@ pub fn App() -> impl IntoView {
                     Route path={path!("")} view={pages::NoMemberSelected};
                     ParentRoute path={path!(":member")} view={pages::MemberLayout} (
                         Route path={path!("")} view={pages::PreferencesPage};
-                        Route path={path!("calendar")} view={pages::CalendarPage};
+                        Route path={path!("timetable")} view={pages::TimetablePage};
                     )
                 )
             }
