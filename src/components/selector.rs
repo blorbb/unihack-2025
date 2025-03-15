@@ -14,7 +14,7 @@ stylance::import_style!(s, "selector.module.scss");
 pub fn Selector(
     #[prop(into)] options: Signal<HashSet<String>>,
     #[prop(into)] selected: Signal<HashSet<String>>,
-    #[prop(into)] set_selected: impl Fn(HashSet<String>) + Clone + Send + Sync + 'static,
+    set_selected: impl Fn(HashSet<String>) + Clone + Send + Sync + 'static,
 ) -> impl IntoView {
     let show_modal = RwSignal::new(false);
     let set_selected = StoredValue::new(set_selected);
@@ -42,9 +42,7 @@ pub fn Selector(
 fn Modal(
     #[prop(into)] options: Signal<HashSet<String>>,
     #[prop(into)] selected: Signal<HashSet<String>>,
-    #[prop(into)] set_selected: StoredValue<
-        impl Fn(HashSet<String>) + Clone + Send + Sync + 'static,
-    >,
+    set_selected: StoredValue<impl Fn(HashSet<String>) + Clone + Send + Sync + 'static>,
 ) -> impl IntoView {
     let select_all = move || set_selected.get_value()(options());
     let select_none = move || set_selected.get_value()(HashSet::new());

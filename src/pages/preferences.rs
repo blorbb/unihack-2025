@@ -1,5 +1,6 @@
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, HashSet};
 
+use crate::{clone_in, components::Selector};
 use backend::{activity::UnitCode, members::Preference, Group, Member};
 use itertools::Itertools;
 use leptos::{logging, prelude::*};
@@ -159,6 +160,7 @@ fn UnitPreferences(
     member: RwSignal<Member>,
 ) -> impl IntoView {
     let unit = StoredValue::new(unit);
+    let activities = StoredValue::new(activities);
     // dont look at this code please
     let unit_preferences = move || {
         member
@@ -177,11 +179,13 @@ fn UnitPreferences(
             .into_iter()
             .collect::<BTreeMap<_, _>>()
             .tap_mut(|map| {
-                activities.iter().for_each(|activity| {
+                activities.write_value().iter().for_each(|activity| {
                     map.entry(activity.clone()).or_default();
                 })
             })
     };
+
+    let set_activity_users = move |activity: String, members: HashSet<String>| {};
 
     mview! {
         div class={s::unit_preferences} (
@@ -196,8 +200,13 @@ fn UnitPreferences(
                     key={|pref| pref.clone()}
                 |pref| (
                     tr(
-                        td({pref.0})
-                        td()
+                        td({pref.0.clone()})
+                        td(
+                            Selector
+                                options={Signal::derive(move || activities.get_value().into_iter().collect())}
+                                selected={Signal::derive(move || pref.1.clone().into_iter().collect())}
+                                set_selected={move |sel| set_activity_users(pref.0.clone(), sel)};
+                        )
                     )
                 )
             )
