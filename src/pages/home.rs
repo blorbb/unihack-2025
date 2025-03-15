@@ -44,7 +44,8 @@ pub fn HomePage() -> impl IntoView {
 
 #[server]
 async fn create_group() -> Result<(), ServerFnError> {
-    let group_id = urlencoding::encode("testid");
+    let group_id = backend::api::create_group();
+    let group_id = urlencoding::encode(&group_id);
     leptos_axum::redirect(&format!("/g/{group_id}"));
     Ok(())
 }
