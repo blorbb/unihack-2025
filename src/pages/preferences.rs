@@ -36,27 +36,20 @@ pub fn PreferencesPage() -> impl IntoView {
             .unwrap_or_default()
     };
 
-    let get_member = ServerAction::<api::GetMember>::new();
-    let set_units = ServerAction::<api::SetUnits>::new();
+    let get_group = ServerAction::<api::GetGroup>::new();
+    let update_member = ServerAction::<api::UpdateMember>::new();
 
     let add_unit = move |unit, member: Member| {
-        set_units.dispatch(api::SetUnits {
-            group: group(),
-            member: member.name.clone(),
-            units: member.units.tap_mut(|units| units.push(unit)),
+        update_member.dispatch(api::UpdateMember {
+            group_id: group(),
+            member: member.tap_mut(|member| member.units.push(unit)),
         });
-        get_member.dispatch(api::GetMember {
-            group: group(),
-            member: member.name.clone(),
-        });
+        get_group.dispatch(api::GetGroup { id: group() });
     };
 
-    // refresh member preferences everon every group/member change
+    // refresh member preferences on every group/member change
     Effect::new(move || {
-        get_member.dispatch(api::GetMember {
-            group: group(),
-            member: member(),
-        });
+        get_group.dispatch(api::GetGroup { id: group() });
     });
 
     mview! {
@@ -67,23 +60,23 @@ pub fn PreferencesPage() -> impl IntoView {
                 fallback={|err| mview! { "Oops!" f["{:#?}", err()] }}
             (
                 [Suspend::new(async move {
-                    let Some(member) = get_member.value()() else {
+                    let Some(group) = get_group.value()() else {
                         return Ok(mview! {
                             "Loading..."
                         }.into_any())
                     };
-                    match member {
-                        Err(_) => Err(GetError::ServerError),
-                        Ok(None) => Err(GetError::MemberNotFound),
-                        Ok(Some(member)) => {
-                            let member2 = member.clone();
-                            Ok(mview! {
-                                Preferences
-                                    add_unit={move |unit| add_unit(unit, member.clone())}
-                                    member={member2};
-                            }.into_any())
-                        }
-                    }
+                    let group = match group {
+                        Err(_) => return Err(GetError::ServerError),
+                        Ok(None) => return Err(GetError::GroupNotFound),
+                        Ok(Some(group)) => group
+                    };
+                    let member = group.members.into_iter().find(|m| m.name == member()).ok_or(GetError::MemberNotFound)?;
+                    let member2 = member.clone();
+                    Ok(mview! {
+                        Preferences
+                            add_unit={move |unit| add_unit(unit, member.clone())}
+                            member={member2};
+                    }.into_any())
                 })]
             )
         )
@@ -123,6 +116,8 @@ pub fn Preferences(
 
 #[derive(thiserror::Error, Debug, Copy, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub enum GetError {
+    #[error("Group not found.")]
+    GroupNotFound,
     #[error("User not found.")]
     MemberNotFound,
     #[error("Server error.")]
