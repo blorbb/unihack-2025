@@ -7,7 +7,7 @@ use tap::Tap;
 
 use crate::{
     api,
-    components::{button::ButtonVariant, Button},
+    components::{button::ButtonVariant, Button, MemberNav},
 };
 
 stylance::import_style!(s, "preferences.module.scss");
