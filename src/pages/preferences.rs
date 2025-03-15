@@ -91,7 +91,7 @@ pub fn Preferences(
     let query = RwSignal::new(String::new());
     let units = Resource::new(query, api::search_units);
 
-    let add_unit = move |unit| {};
+    let add_unit = move |unit| member.write().units.insert(0, unit);
 
     mview! {
         div class={s::page} (
