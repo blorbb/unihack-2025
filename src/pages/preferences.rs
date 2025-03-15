@@ -60,7 +60,6 @@ pub fn PreferencesPage() -> impl IntoView {
                         Err(_) => Err(GetError::ServerError),
                         Ok(None) => Err(GetError::MemberNotFound),
                         Ok(Some(group)) => {
-
                             Ok(mview! {
                                 Preferences
                                     group={group}
@@ -89,24 +88,62 @@ pub fn Preferences(
     };
     let member = RwSignal::new(member);
 
+    let query = RwSignal::new(String::new());
+    let units = Resource::new(query, api::search_units);
+
+    let add_unit = move |unit| {};
+
     mview! {
-        h1({member.read().name.clone()})
+        div class={s::page} (
+            h1({member.read().name.clone()})
 
-        h2 ("Units")
+            input class={s::search_units_input}
+                type="text"
+                placeholder="Add unit"
+                bind:value={query};
+            ul class={s::searched_units} (
+                Transition fallback=["Loading..."]
+                (
+                    [Suspend::new(async move {
+                        match units.await {
+                            Ok(units) => mview! {
+                                For
+                                    each=[
+                                        units.iter()
+                                            .filter(|unit| !member.read().units.contains(unit))
+                                            .cloned()
+                                            .collect::<Vec<_>>()
+                                    ]
+                                    key={String::clone}
+                                |unit| {
+                                    li(
+                                        button class={s::searched_unit}
+                                            on:click={
+                                                let unit = unit.clone();
+                                                move |_| add_unit(unit.clone())
+                                            }
+                                        ({unit})
+                                    )
+                                }
+                            }.into_any(),
+                            Err(e) => format!("Oops, something went wrong.\n{e}").into_any()
+                        }
+                    })]
+                )
+            )
 
-        ul (
-            For
-                each=[member.read().units.clone()]
-                key={String::clone}
-            |unit| {
-                li ({unit})
-            }
+            ul (
+                For
+                    each=[member.read().units.clone()]
+                    key={String::clone}
+                |unit| {
+                    li ({unit})
+                }
+            )
+
+
+            h2 ("Preferences")
         )
-
-        input type="text" placeholder="Add unit";
-        Button variant={ButtonVariant::Primary} ("+")
-
-        h2 ("Preferences")
     }
     .into_any()
 }
