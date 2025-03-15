@@ -19,7 +19,11 @@ pub fn CalendarPage() -> impl IntoView {
     let param = use_params::<CalendarParams>();
     let member_resource = Resource::new(
         move || param.read().clone().unwrap_or_default(),
-        |CalendarParams { group, member }| api::get_member(group, member),
+        async |CalendarParams { group, member }| {
+            api::get_group(group)
+                .await
+                .map(|group| group?.members.into_iter().find(|mem| mem.name == member))
+        },
     );
 
     mview! {
