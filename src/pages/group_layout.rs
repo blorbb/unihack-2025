@@ -7,7 +7,7 @@ use leptos_router::{
 };
 use serde::{Deserialize, Serialize};
 
-use crate::api;
+use crate::api::{self, GroupInfo};
 
 stylance::import_style!(s, "group_layout.module.scss");
 
@@ -56,13 +56,14 @@ pub fn GroupLayout() -> impl IntoView {
 }
 
 #[component]
-fn GroupList(#[prop(into)] group: Signal<backend::Group>) -> impl IntoView {
+fn GroupList(group: GroupInfo) -> impl IntoView {
+    let group = StoredValue::new(group);
     mview! {
         nav class={s::member_list_wrapper} (
             h2("Group Members")
             ul class={s::member_list} (
                 For
-                    each=[group.read().members.iter().map(|m| m.name.clone()).collect::<Vec<_>>()]
+                    each=[group.read_value().members.iter().map(|m| m.name.clone()).collect::<Vec<_>>()]
                     key={|member| member.clone()}
                 |member| {
                     li class={s::member} (

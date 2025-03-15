@@ -1,18 +1,13 @@
-use std::collections::{BTreeMap, BTreeSet, HashSet};
+use std::collections::BTreeSet;
 
-use crate::{clone_in, components::Selector};
-use backend::{activity::UnitCode, members::Preference, Member};
-use itertools::Itertools;
-use leptos::{logging, prelude::*};
+use crate::components::Selector;
+use leptos::prelude::*;
 use leptos_mview::mview;
-use leptos_router::{hooks::use_params, params::Params};
+use leptos_router::hooks::use_params;
+use leptos_router::params::Params;
 use serde::{Deserialize, Serialize};
-use tap::{Conv, Tap};
 
-use crate::{
-    api::{self, GroupInfo, MemberInfo, MemberUnitPreferences},
-    components::{button::ButtonVariant, Button, MemberNav},
-};
+use crate::api::{self, GroupInfo, MemberInfo, MemberUnitPreferences};
 
 stylance::import_style!(s, "preferences.module.scss");
 
@@ -165,7 +160,17 @@ fn UnitPreferences(
     let unit = StoredValue::new(unit);
     let group_members = StoredValue::new(group_members);
 
-    let set_activity_users = move |activity: String, members: BTreeSet<String>| {};
+    let set_activity_users = move |activity: String, members: BTreeSet<String>| {
+        let mut member_guard = member.write();
+        let Some(unit) = member_guard
+            .units
+            .iter_mut()
+            .find(|u| u.code == unit.read_value().code)
+        else {
+            return;
+        };
+        unit.activities.insert(activity, members);
+    };
 
     mview! {
         div class={s::unit_preferences} (
