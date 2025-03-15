@@ -42,7 +42,7 @@ pub fn App() -> impl IntoView {
                 Route path={path!("")} view={pages::HomePage};
                 ParentRoute path={path!("/g/:group")} view={pages::GroupLayout} ssr={SsrMode::Async} (
                     // TODO: actual 'select a member'
-                    Route path={path!("")} view={pages::NotFound};
+                    Route path={path!("")} view={pages::NoMemberSelected};
                     // TODO: uncomment when page implemented
                     // Route path={path!(":member")} view={pages::MemberPage};
                 )
