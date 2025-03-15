@@ -2,6 +2,7 @@ use std::{collections::BTreeMap, str::FromStr};
 
 use anyhow::anyhow;
 use serde::{Deserialize, Serialize};
+use tap::Tap;
 use uuid::Uuid;
 
 use crate::{
@@ -92,11 +93,16 @@ pub fn update_member(group_id: &str, member: Member) -> anyhow::Result<()> {
 }
 
 pub fn search_units(query: &str) -> Vec<String> {
+    if query.trim().is_empty() {
+        return vec![];
+    }
+
     state::CLASSES
         .keys()
-        .filter(|s| s.starts_with(query))
+        .filter(|s| s.to_lowercase().starts_with(&query.to_lowercase()))
         .cloned()
-        .collect()
+        .collect::<Vec<_>>()
+        .tap_mut(|x| x.sort())
 }
 
 pub fn get_member_calendar(

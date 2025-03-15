@@ -115,9 +115,17 @@ pub fn Preferences(
                 bind:value={query};
 
             ul class={s::searched_units} (
-                Transition fallback=["Loading..."]
+                Transition fallback=[mview! {
+                    div class={s::searched_unit} ("Loading...")
+                }]
                 (
                     [Suspend::new(async move { match units.await {
+                        _ if query().trim().is_empty() => mview! {
+                            div class={s::searched_unit} ("Start typing to search")
+                        }.into_any(),
+                        Ok(units) if units.is_empty() => mview! {
+                            div class={s::searched_unit} ("No units found")
+                        }.into_any(),
                         Ok(units) => mview! {
                             For
                                 each=[
