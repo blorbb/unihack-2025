@@ -35,6 +35,7 @@ pub async fn search_units(query: String) -> Result<Vec<String>, ServerFnError> {
     Ok(backend::api::search_units(&query))
 }
 
+#[server]
 pub async fn get_member_calendar(
     group_id: String,
     member: String,
