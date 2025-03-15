@@ -1,6 +1,7 @@
 const TESTING: bool = true;
 
 pub mod classes;
+pub mod solver;
 
 pub mod groups {
     use crate::Group;

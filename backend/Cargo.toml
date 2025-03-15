@@ -11,9 +11,9 @@ tap = { version = "1", optional = true }
 itertools = { version = "0.14", optional = true }
 derive_more = { version = "2", features = ["full"], optional = true }
 serde = { version = "1", features = ["derive", "rc"] }
-rand = "0.9.0"
+rand = { version = "0.9.0", optional = true }
 uuid = { version = "1.16.0", features = ["js", "rng", "v4", "v7"] }
 thiserror = "2.0.12"
 
 [features]
-ssr = ["tap", "itertools", "derive_more"]
+ssr = ["tap", "itertools", "derive_more", "rand"]
