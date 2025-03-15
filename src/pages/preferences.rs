@@ -1,7 +1,7 @@
-use std::collections::{BTreeMap, HashSet};
+use std::collections::{BTreeMap, BTreeSet, HashSet};
 
 use crate::{clone_in, components::Selector};
-use backend::{activity::UnitCode, members::Preference, Group, Member};
+use backend::{activity::UnitCode, members::Preference, Member};
 use itertools::Itertools;
 use leptos::{logging, prelude::*};
 use leptos_mview::mview;
@@ -10,7 +10,7 @@ use serde::{Deserialize, Serialize};
 use tap::{Conv, Tap};
 
 use crate::{
-    api,
+    api::{self, GroupInfo, MemberInfo, MemberUnitPreferences},
     components::{button::ButtonVariant, Button, MemberNav},
 };
 
@@ -79,12 +79,12 @@ pub fn PreferencesPage() -> impl IntoView {
 
 #[component]
 pub fn Preferences(
-    #[prop(into)] group: Group,
-    /// Member MUST be in `group`, otherwise this will panic.
+    #[prop(into)] group: GroupInfo,
+    /// Member MUST be in `group`
     #[prop(into)]
     member: String,
 ) -> impl IntoView {
-    let Some(member) = group.members.into_iter().find(|mem| mem.name == member) else {
+    let Some(member) = group.members.iter().find(|mem| mem.name == member).cloned() else {
         return mview! {
             "Member not found"
         }
@@ -95,7 +95,12 @@ pub fn Preferences(
     let query = RwSignal::new(String::new());
     let units = Resource::new(query, api::search_units);
 
-    let add_unit = move |unit| member.write().units.insert(0, unit);
+    let add_unit = move |unit| {
+        member.write().units.push(MemberUnitPreferences {
+            code: unit,
+            activities: Default::default(),
+        })
+    };
 
     mview! {
         div class={s::page} (
@@ -113,7 +118,7 @@ pub fn Preferences(
                             For
                                 each=[
                                     units.iter()
-                                        .filter(|unit| !member.read().units.contains(unit))
+                                        .filter(|unit| !member.read().units.iter().any(|u| u.code == **unit))
                                         .cloned()
                                         .collect::<Vec<_>>()
                                 ]
@@ -139,12 +144,10 @@ pub fn Preferences(
             ul class={s::preferences} (
                 For
                     each=[member.read().units.clone()]
-                    key={String::clone}
+                    key={|unit| unit.code.clone()}
                 |unit| {
                     li(
-                        Await future={api::get_unit_activities(unit.clone())} |activities| {
-                            UnitPreferences {unit} {member} activities={activities.clone().ok().flatten().unwrap_or_default()};
-                        }
+                        UnitPreferences {unit} {member} group_members={group.members.iter().map(|mem| mem.name.clone()).collect()};
                     )
                 }
             )
@@ -155,57 +158,34 @@ pub fn Preferences(
 
 #[component]
 fn UnitPreferences(
-    unit: String,
-    activities: Vec<String>,
-    member: RwSignal<Member>,
+    unit: MemberUnitPreferences,
+    member: RwSignal<MemberInfo>,
+    group_members: BTreeSet<String>,
 ) -> impl IntoView {
     let unit = StoredValue::new(unit);
-    let activities = StoredValue::new(activities);
-    // dont look at this code please
-    let unit_preferences = move || {
-        member
-            .read()
-            .preferences
-            .iter()
-            .filter(|pref| match pref {
-                Preference::ShareClass(pref_unit, ..) => unit.read_value() == *pref_unit,
-            })
-            .map(|pref| match pref {
-                Preference::ShareClass(_, activity, share_with) => {
-                    (activity.clone(), share_with.clone())
-                }
-            })
-            .into_group_map()
-            .into_iter()
-            .collect::<BTreeMap<_, _>>()
-            .tap_mut(|map| {
-                activities.write_value().iter().for_each(|activity| {
-                    map.entry(activity.clone()).or_default();
-                })
-            })
-    };
+    let group_members = StoredValue::new(group_members);
 
-    let set_activity_users = move |activity: String, members: HashSet<String>| {};
+    let set_activity_users = move |activity: String, members: BTreeSet<String>| {};
 
     mview! {
         div class={s::unit_preferences} (
-            h3({unit.get_value()})
+            h3({unit.read_value().code.clone()})
 
             table class={s::unit_table} (
                 tr(
                     th("Activity")
                     th("Share with")
                 )
-                For each={unit_preferences}
-                    key={|pref| pref.clone()}
-                |pref| (
+                For each=[unit.get_value().activities]
+                    key={|pref| pref.0.clone()}
+                |(activity, members)| (
                     tr(
-                        td({pref.0.clone()})
+                        td({activity.clone()})
                         td(
                             Selector
-                                options={Signal::derive(move || activities.get_value().into_iter().collect())}
-                                selected={Signal::derive(move || pref.1.clone().into_iter().collect())}
-                                set_selected={move |sel| set_activity_users(pref.0.clone(), sel)};
+                                options={Signal::derive(move || group_members.get_value())}
+                                selected={Signal::derive(move || members.clone().into_iter().collect())}
+                                set_selected={move |sel| set_activity_users(activity.clone(), sel)};
                         )
                     )
                 )

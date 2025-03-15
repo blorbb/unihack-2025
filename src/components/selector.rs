@@ -1,4 +1,4 @@
-use std::collections::HashSet;
+use std::collections::BTreeSet;
 
 use leptos::prelude::*;
 use leptos_mview::mview;
@@ -12,9 +12,9 @@ stylance::import_style!(s, "selector.module.scss");
 
 #[component]
 pub fn Selector(
-    #[prop(into)] options: Signal<HashSet<String>>,
-    #[prop(into)] selected: Signal<HashSet<String>>,
-    set_selected: impl Fn(HashSet<String>) + Clone + Send + Sync + 'static,
+    #[prop(into)] options: Signal<BTreeSet<String>>,
+    #[prop(into)] selected: Signal<BTreeSet<String>>,
+    set_selected: impl Fn(BTreeSet<String>) + Clone + Send + Sync + 'static,
 ) -> impl IntoView {
     let show_modal = RwSignal::new(false);
     let set_selected = StoredValue::new(set_selected);
@@ -40,12 +40,12 @@ pub fn Selector(
 
 #[component]
 fn Modal(
-    #[prop(into)] options: Signal<HashSet<String>>,
-    #[prop(into)] selected: Signal<HashSet<String>>,
-    set_selected: StoredValue<impl Fn(HashSet<String>) + Clone + Send + Sync + 'static>,
+    #[prop(into)] options: Signal<BTreeSet<String>>,
+    #[prop(into)] selected: Signal<BTreeSet<String>>,
+    set_selected: StoredValue<impl Fn(BTreeSet<String>) + Clone + Send + Sync + 'static>,
 ) -> impl IntoView {
     let select_all = move || set_selected.get_value()(options());
-    let select_none = move || set_selected.get_value()(HashSet::new());
+    let select_none = move || set_selected.get_value()(BTreeSet::new());
 
     mview! {
         div class={s::modal}
