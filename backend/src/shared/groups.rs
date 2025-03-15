@@ -10,3 +10,9 @@ impl Group {
         Self { members: vec![] }
     }
 }
+
+impl Default for Group {
+    fn default() -> Self {
+        Self::new()
+    }
+}

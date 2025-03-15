@@ -1,6 +1,6 @@
+use backend::api::GetError;
 use leptos::prelude::*;
 use leptos_router::{hooks::use_params, params::Params};
-use serde::{Deserialize, Serialize};
 
 #[derive(Params, PartialEq)]
 struct GroupParams {
@@ -56,15 +56,6 @@ pub fn GroupPage() -> impl IntoView {
     }
 }
 
-#[derive(thiserror::Error, Debug, Copy, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub enum GetError {
-    #[error("Invalid group ID.")]
-    InvalidId,
-    #[error("Group not found.")]
-    GroupNotFound,
-    #[error("Server error.")]
-    ServerError,
-}
 #[server]
 pub async fn get_group(id: String) -> Result<Option<backend::Group>, ServerFnError> {
     Ok(backend::api::get_group(&id))
