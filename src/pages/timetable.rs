@@ -147,7 +147,7 @@ pub fn Class(
     let colour = *units_to_colour.get(&unit).unwrap();
     mview! {
         div class={s::class} style:top=f["{}%", top] style:height=f["{}%", height] (
-            div class={s::class_inner} style:background-color=f["var(--{}-3)",colour] (
+            div class={s::class_inner} style:background-color=f["var(--{}-3)", colour] (
                 p (strong ({format!("{unit} {activity}")}))
                 p ({class.code})
                 p ({format!("{} – {}", format_time(class.start), format_time(class.end))})
