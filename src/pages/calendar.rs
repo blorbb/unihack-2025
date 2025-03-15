@@ -1,11 +1,13 @@
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, HashMap};
 
-use backend::activity::{Class, WeekDay};
+use backend::activity::{Activity, Class, UnitCode, WeekDay};
+use itertools::Itertools;
 use leptos::prelude::*;
 use leptos_mview::mview;
 use leptos_router::{hooks::use_params, params::Params};
 use serde::{Deserialize, Serialize};
 use strum::IntoEnumIterator;
+use tap::Tap;
 
 use crate::api;
 
@@ -54,9 +56,18 @@ pub fn CalendarPage() -> impl IntoView {
 }
 
 #[component]
-pub fn Calendar(
-    #[prop(into)] calendar: Signal<BTreeMap<String, BTreeMap<String, Class>>>,
-) -> impl IntoView {
+pub fn Calendar(calendar: BTreeMap<UnitCode, BTreeMap<Activity, Class>>) -> impl IntoView {
+    let classes = StoredValue::new(
+        calendar
+            .into_iter()
+            .flat_map(|(unit, classes)| {
+                classes
+                    .into_iter()
+                    .map(move |(activity, class)| (unit.clone(), activity, class))
+            })
+            .into_group_map_by(|(_, _, class)| class.day),
+    );
+
     mview! {
         div class={s::calendar} (
             For
@@ -66,9 +77,27 @@ pub fn Calendar(
                 div (
                     h2 class={s::day} ({<&str>::from(day)})
 
-                    div class={s::day_schedule} ()
+                    div class={s::day_schedule} (
+                        For
+                            each=[classes.read_value().get(&day).cloned().unwrap_or_default()]
+                            key={|(unit, activity, _)| (unit.clone(), activity.clone())}
+                        |class| {
+                            Class class={class};
+                        }
+                    )
                 )
             }
+        )
+    }
+}
+
+#[component]
+pub fn Class(
+    #[prop(name = "class")] (unit, activity, class): (UnitCode, Activity, Class),
+) -> impl IntoView {
+    mview! {
+        div (
+            p ({format!("{unit} {activity}: {class:?}")})
         )
     }
 }
