@@ -36,7 +36,7 @@ fn score_solve(users: &HashMap<Username, UserInfo>, solution: &Solution) -> i64 
                 let a = user_classes[i];
                 let b = user_classes[j];
 
-                if (a.day == b.day && max(a.start, b.start) > min(a.end, b.end)) {
+                if a.day == b.day && max(a.start, b.start) > min(a.end, b.end) {
                     ans -= 10
                 }
             }
