@@ -5,7 +5,10 @@ use leptos_router::{components::A, hooks::use_params, params::Params};
 use serde::{Deserialize, Serialize};
 use tap::Tap;
 
-use crate::components::{button::ButtonVariant, Button};
+use crate::{
+    api,
+    components::{button::ButtonVariant, Button},
+};
 
 stylance::import_style!(s, "preferences.module.scss");
 
@@ -25,22 +28,22 @@ pub fn PreferencesPage() -> impl IntoView {
             .unwrap_or_default()
     };
 
-    let get_info = ServerAction::<GetMember>::new();
-    let set_units = ServerAction::<SetUnits>::new();
+    let get_info = ServerAction::<api::GetMember>::new();
+    let set_units = ServerAction::<api::SetUnits>::new();
 
     let add_unit = move |unit, info: UserInfo| {
-        set_units.dispatch(SetUnits {
+        set_units.dispatch(api::SetUnits {
             group: "00000000-0000-0000-0000-000000000000".to_owned(),
             member: member(),
             units: info.units.tap_mut(|units| units.push(unit)),
         });
-        get_info.dispatch(GetMember {
+        get_info.dispatch(api::GetMember {
             group: "00000000-0000-0000-0000-000000000000".to_owned(),
             member: member(),
         });
     };
 
-    get_info.dispatch(GetMember {
+    get_info.dispatch(api::GetMember {
         group: "00000000-0000-0000-0000-000000000000".to_owned(),
         member: member(),
     });
@@ -115,22 +118,4 @@ pub enum GetError {
     MemberNotFound,
     #[error("Server error.")]
     ServerError,
-}
-
-#[server]
-pub async fn get_member(group: String, member: String) -> Result<Option<UserInfo>, ServerFnError> {
-    Ok(Some(UserInfo {
-        units: vec!["FIT1045".into(), "FIT1047".into()],
-        preferences: vec![],
-    }))
-}
-
-#[server]
-pub async fn set_units(
-    group: String,
-    member: String,
-    units: Vec<UnitCode>,
-) -> Result<(), ServerFnError> {
-    println!("set units {group} {member} {units:?}");
-    Ok(())
 }

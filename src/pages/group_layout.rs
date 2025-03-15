@@ -7,6 +7,8 @@ use leptos_router::{
 };
 use serde::{Deserialize, Serialize};
 
+use crate::api;
+
 stylance::import_style!(s, "group_layout.module.scss");
 
 #[derive(Params, PartialEq)]
@@ -25,7 +27,7 @@ pub fn GroupLayout() -> impl IntoView {
             .map(|params| params.group.clone())
             .unwrap_or_default()
     };
-    let group_resource = Resource::new(group, get_group);
+    let group_resource = Resource::new(group, api::get_group);
 
     mview! {
         Suspense
@@ -84,9 +86,4 @@ pub enum GetError {
     GroupNotFound,
     #[error("Server error.")]
     ServerError,
-}
-
-#[server]
-pub async fn get_group(id: String) -> Result<Option<backend::Group>, ServerFnError> {
-    Ok(backend::server::groups::get_group(&id))
 }

@@ -1,6 +1,7 @@
 #![feature(try_blocks)]
 #![feature(let_chains)]
 
+mod api;
 pub mod app;
 pub mod components;
 pub mod pages;
