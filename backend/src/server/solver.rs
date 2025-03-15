@@ -10,7 +10,7 @@ use rand::{
     seq::{IndexedRandom, IteratorRandom},
 };
 
-use super::classes::*;
+use crate::shared::*;
 
 const POPULATION: usize = 50;
 const ITERATIONS: usize = 100;
