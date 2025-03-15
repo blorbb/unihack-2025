@@ -18,6 +18,8 @@ const MUTATIONS: usize = 3;
 
 type Solution = BTreeMap<Username, BTreeMap<UnitCode, BTreeMap<Activity, Class>>>;
 
+type ClassTimes = HashMap<UnitCode, Classes>;
+
 fn score_solve(users: &HashMap<Username, UserInfo>, solution: &Solution) -> i64 {
     let mut ans: i64 = 0;
 
@@ -27,14 +29,14 @@ fn score_solve(users: &HashMap<Username, UserInfo>, solution: &Solution) -> i64 
 
         for (_, activities) in units {
             for (_, class) in activities {
-                user_classes.push(*class);
+                user_classes.push(class.clone());
             }
         }
 
         for i in 0..user_classes.len() {
             for j in (i + 1)..user_classes.len() {
-                let a = user_classes[i];
-                let b = user_classes[j];
+                let a = &user_classes[i];
+                let b = &user_classes[j];
 
                 if a.day == b.day && max(a.start, b.start) > min(a.end, b.end) {
                     ans -= 10
@@ -83,7 +85,7 @@ fn random_sol(
                             class_times[unit_code]
                                 .iter()
                                 .map(|(activity, classes)| {
-                                    (activity.clone(), *classes.choose(rng).unwrap())
+                                    (activity.clone(), classes.choose(rng).unwrap().clone())
                                 })
                                 .collect(),
                         )
@@ -108,7 +110,7 @@ pub fn new_sol(class_times: &ClassTimes, solution: &Solution, rng: &mut ThreadRn
         let (unit, activities) = units.iter_mut().choose(rng).unwrap();
         let (_, class) = activities.iter_mut().choose(rng).unwrap();
 
-        *class = *class_times[username][unit].choose(rng).unwrap();
+        *class = class_times[username][unit].choose(rng).unwrap().clone();
     }
 
     solution
