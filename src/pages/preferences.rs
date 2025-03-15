@@ -1,4 +1,4 @@
-use backend::{activity::UnitCode, Member};
+use backend::{activity::UnitCode, Group, Member};
 use leptos::{logging, prelude::*};
 use leptos_mview::mview;
 use leptos_router::{hooks::use_params, params::Params};
@@ -37,15 +37,6 @@ pub fn PreferencesPage() -> impl IntoView {
     };
 
     let get_group = ServerAction::<api::GetGroup>::new();
-    let update_member = ServerAction::<api::UpdateMember>::new();
-
-    let add_unit = move |unit, member: Member| {
-        update_member.dispatch(api::UpdateMember {
-            group_id: group(),
-            member: member.tap_mut(|member| member.units.push(unit)),
-        });
-        get_group.dispatch(api::GetGroup { id: group() });
-    };
 
     // refresh member preferences on every group/member change
     Effect::new(move || {
@@ -65,18 +56,18 @@ pub fn PreferencesPage() -> impl IntoView {
                             "Loading..."
                         }.into_any())
                     };
-                    let group = match group {
-                        Err(_) => return Err(GetError::ServerError),
-                        Ok(None) => return Err(GetError::GroupNotFound),
-                        Ok(Some(group)) => group
-                    };
-                    let member = group.members.into_iter().find(|m| m.name == member()).ok_or(GetError::MemberNotFound)?;
-                    let member2 = member.clone();
-                    Ok(mview! {
-                        Preferences
-                            add_unit={move |unit| add_unit(unit, member.clone())}
-                            member={member2};
-                    }.into_any())
+                    match group {
+                        Err(_) => Err(GetError::ServerError),
+                        Ok(None) => Err(GetError::MemberNotFound),
+                        Ok(Some(group)) => {
+
+                            Ok(mview! {
+                                Preferences
+                                    group={group}
+                                    member={member()};
+                            }.into_any())
+                        }
+                    }
                 })]
             )
         )
@@ -85,33 +76,39 @@ pub fn PreferencesPage() -> impl IntoView {
 
 #[component]
 pub fn Preferences(
-    add_unit: impl Fn(UnitCode) + 'static,
-    #[prop(into)] member: Signal<Member>,
+    #[prop(into)] group: Group,
+    /// Member MUST be in `group`, otherwise this will panic.
+    #[prop(into)]
+    member: String,
 ) -> impl IntoView {
-    let add_unit_input = RwSignal::new(String::new());
+    let Some(member) = group.members.into_iter().find(|mem| mem.name == member) else {
+        return mview! {
+            "Member not found"
+        }
+        .into_any();
+    };
+    let member = RwSignal::new(member);
+
     mview! {
-        h1({member().name})
+        h1({member.read().name.clone()})
 
         h2 ("Units")
 
         ul (
             For
-                each=[member().units.clone()]
+                each=[member.read().units.clone()]
                 key={String::clone}
             |unit| {
                 li ({unit})
             }
         )
 
-        input type="text" placeholder="Add unit" bind:value={add_unit_input};
-        Button variant={ButtonVariant::Primary} on:click={move |_| {
-            logging::log!("{}", add_unit_input());
-
-            add_unit(add_unit_input());
-        }} ("+")
+        input type="text" placeholder="Add unit";
+        Button variant={ButtonVariant::Primary} ("+")
 
         h2 ("Preferences")
     }
+    .into_any()
 }
 
 #[derive(thiserror::Error, Debug, Copy, Clone, PartialEq, Eq, Serialize, Deserialize)]
