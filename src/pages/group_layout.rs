@@ -3,7 +3,7 @@ use leptos_mview::mview;
 use leptos_router::{components::A, hooks::use_params, params::Params};
 use serde::{Deserialize, Serialize};
 
-stylance::import_style!(s, "group.module.scss");
+stylance::import_style!(s, "group_layout.module.scss");
 
 #[derive(Params, PartialEq)]
 struct GroupParams {
@@ -64,6 +64,7 @@ fn GroupList(#[prop(into)] group: Signal<backend::Group>) -> impl IntoView {
                     )
                 }
             )
+
         )
     }
 }
