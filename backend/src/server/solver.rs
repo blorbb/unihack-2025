@@ -24,11 +24,11 @@ fn score_solve(members: &Vec<Member>, solution: &Solution) -> i64 {
     let mut ans: i64 = 0;
 
     // Check no overlapping //////////
-    for (_, units) in solution {
+    for units in solution.values() {
         let mut user_classes: Vec<Class> = Vec::new();
 
-        for (_, activities) in units {
-            for (_, class) in activities {
+        for activities in units.values() {
+            for class in activities.values() {
                 user_classes.push(class.clone());
             }
         }
@@ -48,13 +48,13 @@ fn score_solve(members: &Vec<Member>, solution: &Solution) -> i64 {
     for member in members {
         for preference in member.preferences.iter() {
             match preference {
-                Preference::ShareClass(unitcode, activity, member_b) => {
+                Preference::ShareClass(unit_code, activity, member_b) => {
                     if let (Some(class_a), Some(class_b)) = (
                         solution[&member.name]
-                            .get(unitcode)
+                            .get(unit_code)
                             .and_then(|x| x.get(activity)),
                         solution[member_b]
-                            .get(unitcode)
+                            .get(unit_code)
                             .and_then(|x| x.get(activity)),
                     ) {
                         if class_a == class_b {
@@ -69,7 +69,7 @@ fn score_solve(members: &Vec<Member>, solution: &Solution) -> i64 {
     ans
 }
 
-fn random_sol(class_times: &ClassTimes, users: &Vec<Member>, rng: &mut ThreadRng) -> Solution {
+fn random_sol(class_times: &ClassTimes, users: &[Member], rng: &mut ThreadRng) -> Solution {
     users
         .iter()
         .map(|member| {
@@ -133,7 +133,7 @@ pub fn solve(class_times: &ClassTimes, members: &Vec<Member>) -> (Solution, i64)
             solutions.first_entry().unwrap().remove();
         }
 
-        while (solutions.len() < POPULATION) {
+        while solutions.len() < POPULATION {
             let solution = new_sol(
                 class_times,
                 solutions.iter().choose(&mut rng).unwrap().1,

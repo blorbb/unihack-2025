@@ -85,13 +85,13 @@ pub fn update_member(group_id: &str, member: Member) -> anyhow::Result<()> {
         .group
         .members
         .iter()
-        .cloned()
         .filter(|x| x.name != member.name)
+        .cloned()
         .collect();
 
     group.group.members.push(member);
 
-    let sol = solve(&*state::CLASSES, &group.group.members).0;
+    let sol = solve(&state::CLASSES, &group.group.members).0;
 
     group.calendar = sol;
 
@@ -112,26 +112,23 @@ pub fn get_member_calendar(
 ) -> anyhow::Result<BTreeMap<UnitCode, BTreeMap<Activity, Class>>> {
     let groups = state::GROUPS.lock().unwrap();
 
-    let groupstate = groups
+    let group_state = groups
         .get(&Uuid::from_str(group_id)?)
         .ok_or(anyhow!("Invalid group id"))?;
 
-    Ok(groupstate.calendar.get(member).cloned().unwrap_or_default())
+    Ok(group_state
+        .calendar
+        .get(member)
+        .cloned()
+        .unwrap_or_default())
 }
 
 pub fn load_classes() {
     let _ = &*state::CLASSES;
 }
 
-pub fn get_activities(unitcode: &str) -> Option<Vec<String>> {
-    Some(
-        state::CLASSES
-            .get(unitcode)?
-            .1
-            .iter()
-            .map(|(k, v)| k.clone())
-            .collect(),
-    )
+pub fn get_activities(unit_code: &str) -> Option<Vec<String>> {
+    Some(state::CLASSES.get(unit_code)?.1.keys().cloned().collect())
 }
 
 #[derive(Debug)]
