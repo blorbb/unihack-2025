@@ -13,4 +13,8 @@
 }
 
 .modal-checkboxes {
+  display: grid;
+  input {
+    width: unset;
+  }
 }

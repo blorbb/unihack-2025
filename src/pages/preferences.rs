@@ -1,6 +1,6 @@
 use std::collections::{BTreeMap, BTreeSet};
 
-use crate::components::Selector;
+use crate::{clone_in, components::Selector};
 use leptos::prelude::*;
 use leptos_mview::mview;
 use leptos_router::hooks::use_params;
@@ -166,6 +166,7 @@ fn UnitPreferences(
 ) -> impl IntoView {
     let unit_code = StoredValue::new(unit);
     let unit = move || {
+        leptos::logging::log!("getting");
         member
             .read()
             .units
@@ -191,7 +192,7 @@ fn UnitPreferences(
 
     mview! {
         div class={s::unit_preferences} (
-            h3({unit_code.clone()})
+            h3({unit_code.get_value()})
 
             table class={s::unit_table} (
                 tr(
@@ -200,13 +201,14 @@ fn UnitPreferences(
                 )
                 For each=[unit().activities]
                     key={|pref| pref.0.clone()}
-                |(activity, members)| (
+                |(activity, _members)| (
                     tr(
                         td({activity.clone()})
                         td(
                             Selector
                                 options={Signal::derive(move || group_members.get_value())}
-                                selected={Signal::derive(move || members.clone().into_iter().collect())}
+                                // members needs to be accessed through unit() to be reactive
+                                selected={Signal::derive(clone_in!(activity, move || unit().activities[&activity].clone()))}
                                 set_selected={move |sel| set_activity_users(activity.clone(), sel)};
                         )
                     )
