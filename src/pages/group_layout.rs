@@ -68,7 +68,6 @@ fn GroupList(#[prop(into)] group: Signal<backend::Group>) -> impl IntoView {
                     li class={s::member} (
                         A attr:class={s::member_link} href={urlencoding::encode(&member).into_owned()} (
                             span class={s::member_name} ({member})
-                            span class={s::member_units} ("TODO")
                         )
                     )
                 }

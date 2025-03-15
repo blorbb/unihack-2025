@@ -90,7 +90,7 @@ pub fn Preferences(
     let member = RwSignal::new(member);
 
     mview! {
-        h1({member.read().name.clone()})
+        h1 class={s::header} ({member.read().name.clone()})
 
         h2 ("Units")
 

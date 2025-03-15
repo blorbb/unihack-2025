@@ -1,7 +1,6 @@
 .timetable {
 	display: grid;
 	grid-template-columns: repeat(5, 1fr);
-	background: white;
 	color: var(--foreground-color)
 }
 
@@ -27,7 +26,12 @@
 	flex-direction: column;
 	font-size: 0.8em;
 	padding-left: 5px;
-  padding-top: 3px;
+	padding-top: 3px;
 	border-radius: .25rem;
 	overflow: auto;
+}
+
+.header {
+	color: var(--color-on-secondary);
+	background-color: var(--color-secondary);
 }
