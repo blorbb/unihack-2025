@@ -148,9 +148,9 @@ pub fn Class(
     mview! {
         div class={s::class} style:top=f["{}%", top] style:height=f["{}%", height] (
             div class={s::class_inner} style:background-color=f["var(--{}-3)",colour] (
-                strong ({format!("{unit} {activity}")})
-                {class.code}
-                {format!("{} – {}", format_time(class.start), format_time(class.end))}
+                p (strong ({format!("{unit} {activity}")}))
+                p ({class.code})
+                p ({format!("{} – {}", format_time(class.start), format_time(class.end))})
             )
         )
     }
