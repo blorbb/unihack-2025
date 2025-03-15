@@ -1,4 +1,4 @@
-use std::collections::BTreeSet;
+use std::collections::{BTreeMap, BTreeSet};
 
 use crate::components::Selector;
 use leptos::prelude::*;
@@ -90,11 +90,18 @@ pub fn Preferences(
     let query = RwSignal::new(String::new());
     let units = Resource::new(query, api::search_units);
 
-    let add_unit = move |unit| {
-        member.write().units.push(MemberUnitPreferences {
-            code: unit,
-            activities: Default::default(),
-        })
+    let add_unit = move |unit: String| {
+        leptos::task::spawn_local(async move {
+            let Ok(Some(activities)) = api::get_unit_activities(unit.clone()).await else {
+                return;
+            };
+            member.write().units.push(MemberUnitPreferences {
+                code: unit,
+                activities: BTreeMap::from_iter(
+                    activities.into_iter().map(|act| (act, BTreeSet::default())),
+                ),
+            })
+        });
     };
 
     mview! {
