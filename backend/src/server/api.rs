@@ -83,7 +83,7 @@ pub fn update_member(group_id: &str, member: Member) -> anyhow::Result<()> {
 pub fn search_units(query: &str) -> Vec<String> {
     state::CLASSES
         .keys()
-        .filter(|s| query.starts_with(*s))
+        .filter(|s| s.starts_with(query))
         .map(|s| s.clone())
         .collect()
 }
