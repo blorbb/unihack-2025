@@ -2,6 +2,7 @@ use std::{
     cmp::{max, min},
     collections::{BTreeMap, HashMap},
     hash::{DefaultHasher, Hash, Hasher},
+    mem,
 };
 
 use rand::{
@@ -10,17 +11,17 @@ use rand::{
     seq::{IndexedRandom, IteratorRandom},
 };
 
-use crate::shared::*;
+use crate::{Member, members::Preference, shared::activity::*};
 
 const POPULATION: usize = 50;
 const ITERATIONS: usize = 100;
 const MUTATIONS: usize = 3;
 
-type Solution = BTreeMap<Username, BTreeMap<UnitCode, BTreeMap<Activity, Class>>>;
+type Solution = BTreeMap<String, BTreeMap<UnitCode, BTreeMap<Activity, Class>>>;
 
 pub type ClassTimes = HashMap<UnitCode, Classes>;
 
-fn score_solve(users: &HashMap<Username, UserInfo>, solution: &Solution) -> i64 {
+fn score_solve(members: &Vec<Member>, solution: &Solution) -> i64 {
     let mut ans: i64 = 0;
 
     // Check no overlapping //////////
@@ -45,14 +46,14 @@ fn score_solve(users: &HashMap<Username, UserInfo>, solution: &Solution) -> i64 
         }
     }
 
-    for (username, user_info) in users {
-        for preference in user_info.preferences.iter() {
+    for member in members {
+        for preference in member.preferences.iter() {
             match preference {
-                Preference::ShareClass(unitcode, activity, username_b) => {
-                    let class_a = solution[username]
+                Preference::ShareClass(unitcode, activity, member_b) => {
+                    let class_a = solution[&member.name]
                         .get(unitcode)
                         .and_then(|x| x.get(activity));
-                    let class_b = solution[username_b]
+                    let class_b = solution[member_b]
                         .get(unitcode)
                         .and_then(|x| x.get(activity));
                     if class_a == class_b {
@@ -66,17 +67,13 @@ fn score_solve(users: &HashMap<Username, UserInfo>, solution: &Solution) -> i64 
     ans
 }
 
-fn random_sol(
-    class_times: &ClassTimes,
-    users: &HashMap<Username, UserInfo>,
-    rng: &mut ThreadRng,
-) -> Solution {
+fn random_sol(class_times: &ClassTimes, users: &Vec<Member>, rng: &mut ThreadRng) -> Solution {
     users
         .iter()
-        .map(|(username, user_info)| {
+        .map(|member| {
             (
-                username.clone(),
-                user_info
+                member.name.clone(),
+                member
                     .units
                     .iter()
                     .map(|unit_code| {
@@ -116,20 +113,20 @@ fn new_sol(class_times: &ClassTimes, solution: &Solution, rng: &mut ThreadRng) -
     solution
 }
 
-pub fn solve(class_times: &ClassTimes, users: &HashMap<Username, UserInfo>) -> (Solution, i64) {
+pub fn solve(class_times: &ClassTimes, members: &Vec<Member>) -> (Solution, i64) {
     let mut rng = rng();
 
     let mut solutions: BTreeMap<(i64, u64), Solution> = BTreeMap::new();
 
     while solutions.len() < POPULATION {
-        let solution = random_sol(class_times, users, &mut rng);
-        let score = score_solve(users, &solution);
+        let solution = random_sol(class_times, members, &mut rng);
+        let score = score_solve(members, &solution);
         let hash = hash_solve(&solution);
         solutions.insert((score, hash), solution);
     }
 
     for _ in 0..ITERATIONS {
-        while (solutions.len() > POPULATION / 2) {
+        while solutions.len() > POPULATION / 2 {
             solutions.first_entry().unwrap().remove();
         }
 
@@ -139,7 +136,7 @@ pub fn solve(class_times: &ClassTimes, users: &HashMap<Username, UserInfo>) -> (
                 solutions.iter().choose(&mut rng).unwrap().1,
                 &mut rng,
             );
-            let score = score_solve(users, &solution);
+            let score = score_solve(members, &solution);
             let hash = hash_solve(&solution);
             solutions.insert((score, hash), solution);
         }
