@@ -7,7 +7,7 @@ stylance::import_style!(s, "group.module.scss");
 
 #[derive(Params, PartialEq)]
 struct GroupParams {
-    group: Option<String>,
+    group: String,
 }
 
 #[component]
@@ -18,7 +18,7 @@ pub fn GroupPage() -> impl IntoView {
             .read()
             .as_ref()
             .ok()
-            .and_then(|x| x.group.clone())
+            .map(|params| params.group.clone())
             .unwrap_or_default()
     };
     let group_resource = Resource::new(group, get_group);
