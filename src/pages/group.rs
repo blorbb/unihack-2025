@@ -1,6 +1,9 @@
 use leptos::prelude::*;
-use leptos_router::{hooks::use_params, params::Params};
+use leptos_mview::mview;
+use leptos_router::{components::A, hooks::use_params, params::Params};
 use serde::{Deserialize, Serialize};
+
+stylance::import_style!(s, "group.module.scss");
 
 #[derive(Params, PartialEq)]
 struct GroupParams {
@@ -16,44 +19,49 @@ pub fn GroupPage() -> impl IntoView {
             .as_ref()
             .ok()
             .and_then(|x| x.group.clone())
-            .unwrap_or_else(|| "testid".to_string())
+            .unwrap_or_default()
     };
-    let group_resource = Resource::new(group, async |group| get_group(group).await);
-    let group_view = Suspend::new(async move {
-        match group_resource.await {
-            Ok(Some(g)) => Ok(view! {
-                <h1>{g.members.clone()}</h1>
-                <ul>{move || {
-                    g.members.iter()
-                        .map(|mem| view!{<li>{mem.to_owned()}</li>})
-                        .collect::<Vec<_>>()
-                }}
-                </ul>
-            }),
-            Ok(None) => Err(GetError::GroupNotFound),
-            Err(_) => Err(GetError::ServerError),
-        }
-    });
+    let group_resource = Resource::new(group, get_group);
 
-    view! {
-        <Suspense fallback=move || view!{<p>{"Loading group..."}</p>}>
-            <ErrorBoundary fallback=|errors| {
-                view! {
-                    <div class="error">
-                        <h1>"Failure"</h1>
-                        <ul>
-                            {move || {
-                                errors
-                                    .get()
-                                    .into_iter()
-                                    .map(|(_, err)| view! {<li>{err.to_string()}</li>})
-                                    .collect::<Vec<_>>()
-                            }}
-                        </ul>
-                    </div>
-                }
-            }>{group_view}</ErrorBoundary>
-        </Suspense>
+    mview! {
+        Suspense
+            fallback=[mview! { p("Loading group...") }]
+        (
+            ErrorBoundary
+                fallback={|err| mview! { "Oops!" f["{:#?}", err()] }}
+            (
+                [Suspend::new(async move {
+                    let group = group_resource.await;
+                    let view = match group {
+                        Ok(Some(g)) => mview! {
+                            GroupList group={g};
+                        },
+                        Ok(None) => return Err(GetError::GroupNotFound),
+                        Err(e) => return Err(GetError::ServerError)
+                    };
+                    Ok(view)
+                })]
+            )
+        )
+    }
+}
+
+#[component]
+fn GroupList(#[prop(into)] group: Signal<backend::Group>) -> impl IntoView {
+    mview! {
+        ul class={s::member_list} (
+            For
+                each=[group.read().members.clone()]
+                key={|member| member.clone()}
+            |member| {
+                li class={s::member} (
+                    A href={urlencoding::encode(&member).into_owned()} (
+                        span class={s::member_name} ({member})
+                        span class={s::member_units} ("TODO")
+                    )
+                )
+            }
+        )
     }
 }
 
@@ -66,6 +74,7 @@ pub enum GetError {
     #[error("Server error.")]
     ServerError,
 }
+
 #[server]
 pub async fn get_group(id: String) -> Result<Option<backend::Group>, ServerFnError> {
     Ok(backend::server::groups::get_group(&id))
