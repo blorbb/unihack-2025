@@ -14,12 +14,20 @@ stylance::import_style!(s, "preferences.module.scss");
 
 #[derive(Params, Clone, Default, PartialEq)]
 struct PreferencesParams {
+    group: String,
     member: String,
 }
 
 #[component]
 pub fn PreferencesPage() -> impl IntoView {
     let param = use_params::<PreferencesParams>();
+    let group = move || {
+        param
+            .read()
+            .as_ref()
+            .map(|params| params.group.clone())
+            .unwrap_or_default()
+    };
     let member = move || {
         param
             .read()
@@ -28,24 +36,27 @@ pub fn PreferencesPage() -> impl IntoView {
             .unwrap_or_default()
     };
 
-    let get_info = ServerAction::<api::GetMember>::new();
+    let member_preferences = ServerAction::<api::GetMember>::new();
     let set_units = ServerAction::<api::SetUnits>::new();
 
     let add_unit = move |unit, info: UserInfo| {
         set_units.dispatch(api::SetUnits {
-            group: "00000000-0000-0000-0000-000000000000".to_owned(),
+            group: group(),
             member: member(),
             units: info.units.tap_mut(|units| units.push(unit)),
         });
-        get_info.dispatch(api::GetMember {
-            group: "00000000-0000-0000-0000-000000000000".to_owned(),
+        member_preferences.dispatch(api::GetMember {
+            group: group(),
             member: member(),
         });
     };
 
-    get_info.dispatch(api::GetMember {
-        group: "00000000-0000-0000-0000-000000000000".to_owned(),
-        member: member(),
+    // refresh member preferences everon every group/member change
+    Effect::new(move || {
+        member_preferences.dispatch(api::GetMember {
+            group: group(),
+            member: member(),
+        });
     });
 
     mview! {
@@ -56,7 +67,7 @@ pub fn PreferencesPage() -> impl IntoView {
                 fallback={|err| mview! { "Oops!" f["{:#?}", err()] }}
             (
                 [Suspend::new(async move {
-                    let Some(info) = get_info.value()() else {
+                    let Some(info) = member_preferences.value()() else {
                         return Ok(mview! {
                             "Loading..."
                         }.into_any())
@@ -66,7 +77,11 @@ pub fn PreferencesPage() -> impl IntoView {
                         Ok(None) => Err(GetError::MemberNotFound),
                         Ok(Some(info)) => {
                             let info2 = info.clone();
-                            Ok(mview! {Preferences add_unit={move |unit| add_unit(unit, info.clone())} member={member()} info={info2}; }.into_any())
+                            Ok(mview! {
+                                Preferences
+                                    add_unit={move |unit| add_unit(unit, info.clone())}
+                                    member={member()} info={info2};
+                            }.into_any())
                         }
                     }
                 })]
@@ -83,11 +98,11 @@ pub fn Preferences(
 ) -> impl IntoView {
     let add_unit_input = RwSignal::new(String::new());
     mview! {
-        nav (
-            ul class={s::member_nav} (
-                li (A href="" ("Preferences"))
-                li (A href="calendar" ("Calendar"))
-            )
+        h1({member})
+
+        ul class={s::member_nav} (
+            li (A href="" ("Preferences"))
+            li (A href="calendar" ("Calendar"))
         )
 
         h2 ("Units")
