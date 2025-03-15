@@ -2,7 +2,7 @@ use leptos::prelude::*;
 use leptos_meta::{provide_meta_context, MetaTags, Stylesheet, Title};
 use leptos_mview::mview;
 use leptos_router::{
-    components::{Route, Router, Routes},
+    components::{ParentRoute, Route, Router, Routes},
     path, SsrMode,
 };
 
@@ -38,11 +38,16 @@ pub fn App() -> impl IntoView {
         Title text="Welcome";
 
         Router {
-            main {
-                Routes fallback=[pages::NotFound] {
-                    Route path={path!("")} view={pages::HomePage};
-                    Route path={path!("g/:group")} view={pages::GroupPage} ssr={SsrMode::Async};
-                }
+            Routes fallback=[pages::NotFound] {
+                Route path={path!("")} view={pages::HomePage};
+                ParentRoute path={path!("/g/:group")} view={pages::GroupLayout} ssr={SsrMode::Async} (
+                    // TODO: actual 'select a member'
+                    Route path={path!("")} view={pages::NoMemberSelected};
+                    ParentRoute path={path!(":member")} view={pages::MemberLayout} (
+                        Route path={path!("")} view={pages::PreferencesPage};
+                        Route path={path!("calendar")} view={pages::CalendarPage};
+                    )
+                )
             }
         }
     }

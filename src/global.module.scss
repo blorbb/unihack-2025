@@ -2,6 +2,7 @@
 
 :root {
   // see readme
+  --base-transitions: ;
   --component-transitions: var(--base-transitions);
 
   // fonts //
@@ -62,6 +63,10 @@
 
   // break very long words if necessary
   overflow-wrap: break-word;
+}
+
+ul {
+  list-style-type: none;
 }
 
 code {
