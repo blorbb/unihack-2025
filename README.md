@@ -15,9 +15,7 @@ npm install -g sass
 ## Fetching data
 ```sh
 # Fetch data
-wget https://github.com/blorbb/unihack
--2025/archive/6004e9e2661abda0f0778b297f3deb53271e1cd7/unihack-2025
--6004e9e2661abda0f0778b297f3deb53271e1cd7.tar.gz
+wget https://github.com/blorbb/unihack-2025/archive/6004e9e2661abda0f0778b297f3deb53271e1cd7/unihack-2025-6004e9e2661abda0f0778b297f3deb53271e1cd7.tar.gz
 # Extract
 tar --extract --file unihack-2025-6004e9e2661abda0f0778b297f3deb53271e1cd7.tar.gz
 # Rename directory

@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use crate::{
-    Member, TESTING,
+    Animation, Member, TESTING,
     activity::{Activity, Class, UnitCode},
     groups::Group,
 };
@@ -123,12 +123,17 @@ pub fn get_member_calendar(
         .unwrap_or_default())
 }
 
+pub fn get_activities(unit_code: &str) -> Option<Vec<String>> {
+    Some(state::CLASSES.get(unit_code)?.1.keys().cloned().collect())
+}
+pub fn get_animations() -> &'static Animation {
+    &*state::ANIMATION
+}
 pub fn load_classes() {
     let _ = &*state::CLASSES;
 }
-
-pub fn get_activities(unit_code: &str) -> Option<Vec<String>> {
-    Some(state::CLASSES.get(unit_code)?.1.keys().cloned().collect())
+pub fn load_animation() {
+    let _ = &*state::ANIMATION;
 }
 
 #[derive(Debug)]
@@ -145,7 +150,6 @@ impl GroupState {
         }
     }
 }
-
 mod state {
     use std::{
         collections::HashMap,
@@ -154,6 +158,7 @@ mod state {
     };
 
     use crate::{
+        Animation,
         activity::{Classes, UnitInfo},
         classes::load_classes,
         members::Member,
@@ -183,5 +188,24 @@ mod state {
     });
     pub static CLASSES: LazyLock<HashMap<UnitCode, (UnitInfo, Classes)>> = LazyLock::new(|| {
         load_classes(Path::new("./class-data/classes")).expect("Missing class-data")
+    });
+    pub static ANIMATION: LazyLock<Animation> = LazyLock::new(|| {
+        fn init() -> Option<Vec<String>> {
+            let mut frames = vec![];
+            let animations_dir = std::fs::read_dir(Path::new("./animation/"))
+                .expect("Missing ./animations directory");
+            for file in animations_dir.into_iter() {
+                match file {
+                    Ok(f) if f.file_type().ok()?.is_file() => {
+                        let contents = std::fs::read_to_string(f.path()).ok()?;
+                        frames.push(contents)
+                    }
+                    Ok(_) => (),
+                    Err(x) => eprintln!("Failed to open? {x}"),
+                }
+            }
+            Some(frames)
+        }
+        init().expect("Failed to initialise animations")
     });
 }

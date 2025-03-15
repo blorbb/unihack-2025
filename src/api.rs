@@ -4,7 +4,7 @@ use leptos::prelude::*;
 
 use backend::{
     activity::{Activity, Class, UnitCode},
-    Group, Member,
+    Animation, Group, Member,
 };
 
 #[server]
@@ -42,4 +42,9 @@ pub async fn get_member_calendar(
 ) -> Result<BTreeMap<UnitCode, BTreeMap<Activity, Class>>, ServerFnError> {
     backend::api::get_member_calendar(&group_id, &member)
         .map_err(|e| ServerFnError::ServerError(e.to_string()))
+}
+
+#[server]
+pub async fn get_animations() -> Result<Animation, ServerFnError> {
+    Ok(backend::api::get_animations().clone())
 }

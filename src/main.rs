@@ -9,6 +9,7 @@ async fn main() {
 
     // Load classes
     backend::api::load_classes();
+    backend::api::load_animation();
 
     let conf = get_configuration(None).unwrap();
     let addr = conf.leptos_options.site_addr;

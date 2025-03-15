@@ -1,6 +1,7 @@
 use crate::components::boo;
 use leptos::prelude::*;
 use leptos_mview::mview;
+use serde::{Deserialize, Serialize};
 
 const FRAME: &'static str = r#"                                                                                                    
                                                                                                     
@@ -47,16 +48,43 @@ const FRAME: &'static str = r#"
 stylance::import_style!(s, "boo.module.scss");
 #[component]
 pub fn BooPage() -> impl IntoView {
-    let frame = FRAME.lines().collect::<Vec<_>>();
+    let frames_resource = OnceResource::new(crate::api::get_animations());
     mview! {
         main (
-            h2 ("Boo")
-            boo::Terminal
-                frame={frame}
-                whitespace_padding={15}
-                columns={100}
-                rows={41};
+        Suspense
+            fallback=[mview! { p("Loading group...") }]
+        (
+            ErrorBoundary
+                fallback={|err| mview! { "Oops!" f["{:#?}", err()] }}
+            (
 
+                [Suspend::new(async move {
+                    let frames = frames_resource.get();
+                    let view = match frames {
+                        Some(Ok(v)) => mview! {
+
+                            boo::Terminal
+                                frames={v}
+                                whitespace_padding={15}
+                                columns={100}
+                                rows={41};
+
+                        },
+                        _ => return Err(GetError::ServerError)
+                    };
+                    Ok(view)
+                })]
+            )
+        )
         )
     }
+}
+#[derive(thiserror::Error, Debug, Copy, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub enum GetError {
+    #[error("Invalid group ID.")]
+    InvalidId,
+    #[error("Group not found.")]
+    GroupNotFound,
+    #[error("Server error.")]
+    ServerError,
 }
