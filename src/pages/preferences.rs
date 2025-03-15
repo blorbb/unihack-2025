@@ -1,10 +1,12 @@
+use std::collections::BTreeMap;
+
 use backend::{activity::UnitCode, members::Preference, Group, Member};
 use itertools::Itertools;
 use leptos::{logging, prelude::*};
 use leptos_mview::mview;
 use leptos_router::{hooks::use_params, params::Params};
 use serde::{Deserialize, Serialize};
-use tap::Tap;
+use tap::{Conv, Tap};
 
 use crate::{
     api,
@@ -139,7 +141,9 @@ pub fn Preferences(
                     key={String::clone}
                 |unit| {
                     li(
-                        UnitPreferences {unit} {member};
+                        Await future={api::get_unit_activities(unit.clone())} |activities| {
+                            UnitPreferences {unit} {member} activities={activities.clone().ok().flatten().unwrap_or_default()};
+                        }
                     )
                 }
             )
@@ -149,8 +153,13 @@ pub fn Preferences(
 }
 
 #[component]
-fn UnitPreferences(unit: String, member: RwSignal<Member>) -> impl IntoView {
+fn UnitPreferences(
+    unit: String,
+    activities: Vec<String>,
+    member: RwSignal<Member>,
+) -> impl IntoView {
     let unit = StoredValue::new(unit);
+    // dont look at this code please
     let unit_preferences = move || {
         member
             .read()
@@ -165,6 +174,13 @@ fn UnitPreferences(unit: String, member: RwSignal<Member>) -> impl IntoView {
                 }
             })
             .into_group_map()
+            .into_iter()
+            .collect::<BTreeMap<_, _>>()
+            .tap_mut(|map| {
+                activities.iter().for_each(|activity| {
+                    map.entry(activity.clone()).or_default();
+                })
+            })
     };
 
     mview! {
