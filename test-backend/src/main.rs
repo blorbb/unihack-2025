@@ -6,10 +6,8 @@ use backend::{
 };
 use std::path::Path;
 
-#[tokio::main]
-async fn main() -> Result<()> {
-    let classes: ClassTimes = backend::classes::load_classes(Path::new("../class-data/classes"))
-        .await?
+fn main() -> Result<()> {
+    let classes: ClassTimes = backend::classes::load_classes(Path::new("../class-data/classes"))?
         .into_iter()
         .map(|(a, (_, c))| (a, c))
         .collect();

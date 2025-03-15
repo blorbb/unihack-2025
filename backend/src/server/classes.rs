@@ -32,8 +32,8 @@ fn parse_class(data: &serde_json::Value) -> Option<Option<(Activity, Class)>> {
     )))
 }
 
-async fn load_unit_classes(file: &Path) -> Result<(UnitCode, UnitInfo, Classes)> {
-    let data = serde_json::from_slice::<serde_json::Value>(&tokio::fs::read(file).await?)?;
+fn load_unit_classes(file: &Path) -> Result<(UnitCode, UnitInfo, Classes)> {
+    let data = serde_json::from_slice::<serde_json::Value>(&std::fs::read(file)?)?;
     let result: Option<(UnitCode, UnitInfo, HashMap<Activity, Vec<Class>>)> = try {
         let code = data.get("code")?.as_str()?[..7].to_owned();
         let name = data.get("title")?.as_str()?.to_owned();
@@ -50,11 +50,10 @@ async fn load_unit_classes(file: &Path) -> Result<(UnitCode, UnitInfo, Classes)>
     result.ok_or(anyhow!("invalid data: {data}"))
 }
 
-pub async fn load_classes(dir: &Path) -> Result<HashMap<UnitCode, (UnitInfo, Classes)>> {
-    Ok(ReadDirStream::new(tokio::fs::read_dir(dir).await?)
-        .then(async |x| Ok(load_unit_classes(&x?.path()).await))
-        .collect::<Result<Result<Vec<_>>>>()
-        .await??
+pub fn load_classes(dir: &Path) -> Result<HashMap<UnitCode, (UnitInfo, Classes)>> {
+    Ok(std::fs::read_dir(dir)?
+        .map(|x| Ok(load_unit_classes(&x?.path())))
+        .collect::<Result<Result<Vec<_>>>>()??
         .into_iter()
         .map(|(code, info, classes)| (code, (info, classes)))
         .collect::<HashMap<_, _>>())
