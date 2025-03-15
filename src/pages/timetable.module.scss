@@ -22,14 +22,15 @@ $grid-color: var(--gray-5);
 	position: relative;
 	height: $num-hours * 70px;
 	border-top: ($grid-width / 2) solid $grid-color;
-	background: repeating-linear-gradient(
-		to bottom,
-		$grid-color,
-		$grid-color $grid-width / 2,
-		white $grid-width / 2,
-		white (100% / $num-hours) - $grid-width / 2,
-		$grid-color (100% / $num-hours) - $grid-width / 2,
-		$grid-color (100% / $num-hours),
+	background: repeating-linear-gradient(to bottom,
+			$grid-color,
+			$grid-color $grid-width / 2,
+			var(--color-background) $grid-width / 2,
+			var(--color-background) (100% / $num-hours) - $grid-width / 2,
+			$grid-color (
+			100% / $num-hours) - $grid-width / 2,
+		$grid-color (
+		100% / $num-hours),
 	);
 }
 
