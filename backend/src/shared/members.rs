@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 
 use super::activity::{Activity, UnitCode};
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum Preference {
     ShareClass(UnitCode, Activity, String),
 }

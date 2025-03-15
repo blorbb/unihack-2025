@@ -1,4 +1,5 @@
-use backend::{activity::UnitCode, Group, Member};
+use backend::{activity::UnitCode, members::Preference, Group, Member};
+use itertools::Itertools;
 use leptos::{logging, prelude::*};
 use leptos_mview::mview;
 use leptos_router::{hooks::use_params, params::Params};
@@ -130,20 +131,59 @@ pub fn Preferences(
                 )
             )
 
-            ul (
+            h2("Selected Units")
+
+            ul class={s::preferences} (
                 For
                     each=[member.read().units.clone()]
                     key={String::clone}
                 |unit| {
-                    li ({unit})
+                    li(
+                        UnitPreferences {unit} {member};
+                    )
                 }
             )
-
-
-            h2 ("Preferences")
         )
     }
     .into_any()
+}
+
+#[component]
+fn UnitPreferences(unit: String, member: RwSignal<Member>) -> impl IntoView {
+    let unit = StoredValue::new(unit);
+    let unit_preferences = move || {
+        member
+            .read()
+            .preferences
+            .iter()
+            .filter(|pref| match pref {
+                Preference::ShareClass(pref_unit, ..) => unit.read_value() == *pref_unit,
+            })
+            .map(|pref| match pref {
+                Preference::ShareClass(unit, activity, share_with) => {
+                    (activity.clone(), share_with.clone())
+                }
+            })
+            .into_group_map()
+    };
+
+    mview! {
+        div class={s::unit_preferences} (
+            h3({unit.get_value()})
+
+            table class={s::unit_table} (
+                th(
+                    td("Activity")
+                    td("Shared with")
+                )
+                For each={unit_preferences}
+                    key={|pref| pref.clone()}
+                |pref| (
+                    ""
+                )
+            )
+        )
+    }
 }
 
 #[derive(thiserror::Error, Debug, Copy, Clone, PartialEq, Eq, Serialize, Deserialize)]
