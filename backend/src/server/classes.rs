@@ -6,7 +6,7 @@ use num_traits::FromPrimitive;
 
 use crate::shared::activity::{Activity, Class, Classes, UnitCode, UnitInfo};
 
-fn parse_class(data: &serde_json::Value) -> Option<Option<(Activity, Class)>> {
+fn parse_class(data: &serde_json::Value) -> Option<(Activity, Class)> {
     let part = data.get("part")?.as_str()?;
     if !(part.is_empty() || part == "P1") {
         return None;
@@ -23,7 +23,7 @@ fn parse_class(data: &serde_json::Value) -> Option<Option<(Activity, Class)>> {
         60 * hr.parse::<u16>().ok()? + min.parse::<u16>().ok()?
     };
     let end = start + 60 * u16::try_from(data.get("duration")?.as_u64()?).ok()?;
-    Some(Some((
+    Some((
         activity,
         Class {
             day,
@@ -31,7 +31,7 @@ fn parse_class(data: &serde_json::Value) -> Option<Option<(Activity, Class)>> {
             start,
             end,
         },
-    )))
+    ))
 }
 
 fn load_unit_classes(file: &Path) -> Result<(UnitCode, UnitInfo, Classes)> {
@@ -44,7 +44,7 @@ fn load_unit_classes(file: &Path) -> Result<(UnitCode, UnitInfo, Classes)> {
             .as_array()?
             .iter()
             .filter_map(parse_class)
-            .collect::<Option<Vec<_>>>()?
+            .collect::<Vec<_>>()
             .into_iter()
             .into_group_map();
         (code, UnitInfo { name }, classes)
