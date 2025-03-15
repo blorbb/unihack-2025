@@ -269,6 +269,7 @@ h3 {
   --red-3: #ffa8a8;
   --grape-3: #e599f7;
   --pink-3: #faa2c1;
+  --gray-5: #adb5bd;
 
   --color-primary: rgb(255 176 200);
   --color-surface-tint: rgb(255 176 200);
@@ -489,6 +490,11 @@ h3 {
 
 
 
+$num-hours: 12;
+$grid-width: 0.1%;
+
+$grid-color: var(--gray-5);
+
 .timetable-788cd3a {
 	display: grid;
 	grid-template-columns: repeat(5, 1fr);
@@ -497,12 +503,27 @@ h3 {
 }
 
 .day-788cd3a {
-	text-align: center;
+	border-right: 1px solid $grid-color;
 }
 
-.day_schedule-788cd3a {
+.day-header-788cd3a {
+	text-align: center;
+	border-bottom: 3px solid $grid-color;
+}
+
+.day-schedule-788cd3a {
 	position: relative;
-	height: 12 * 70px;
+	height: $num-hours * 70px;
+	border-top: ($grid-width / 2) solid $grid-color;
+	background: repeating-linear-gradient(
+		to bottom,
+		$grid-color,
+		$grid-color $grid-width / 2,
+		white $grid-width / 2,
+		white (100% / $num-hours) - $grid-width / 2,
+		$grid-color (100% / $num-hours) - $grid-width / 2,
+		$grid-color (100% / $num-hours),
+	);
 }
 
 .class-788cd3a {

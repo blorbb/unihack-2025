@@ -120,8 +120,8 @@ fn Timetable(timetable: BTreeMap<UnitCode, BTreeMap<Activity, Class>>) -> impl I
                 each=[WeekDay::iter()]
                 key={WeekDay::clone}
             |day| {
-                div (
-                    h2 class={s::day} ({<&str>::from(day)})
+                div class={s::day} (
+                    h2 class={s::day_header} ({<&str>::from(day)})
 
                     div class={s::day_schedule} (
                         For
