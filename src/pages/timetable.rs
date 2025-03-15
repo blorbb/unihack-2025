@@ -1,4 +1,4 @@
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, HashMap};
 
 use backend::activity::{Activity, Class, UnitCode, WeekDay};
 use itertools::Itertools;
@@ -23,13 +23,31 @@ fn format_time(time: u16) -> String {
     format!("{hrs:02}:{mins:02}")
 }
 
+// fn activity_to_colour(activity: Activity) -> &'static str {
+//     [
+//         ("Applied", ""),
+//         ("Studio", ""),
+//         ("Tutorial", ""),
+//         //
+//         ("Practical", ""),
+//         ("Laboratory", ""),
+//         //
+//         ("Lecture", ""),
+//         ("Workshop", ""),
+//         ("Seminar", ""),
+//     ]
+//     .into_iter()
+//     .find(|(x, _)| activity.starts_with(x))
+//     .map(|(_, colour)| colour)
+//     .unwrap_or("")
+// }
+
 #[derive(Params, Clone, Default, PartialEq)]
 struct TimetableParams {
     group: String,
     member: String,
 }
 
-// TODO: rename to Timetable
 #[component]
 pub fn TimetablePage() -> impl IntoView {
     let param = use_params::<TimetableParams>();
@@ -68,8 +86,23 @@ pub fn TimetablePage() -> impl IntoView {
     }
 }
 
+const COLOURS: [&str; 5] = ["blue", "green", "orange", "red", "grape"];
+const DEFAULT_COLOUR: &str = "pink";
+
 #[component]
 fn Timetable(timetable: BTreeMap<UnitCode, BTreeMap<Activity, Class>>) -> impl IntoView {
+    let units_to_colour = StoredValue::new(
+        timetable
+            .keys()
+            .enumerate()
+            .map(|(i, unit)| {
+                (
+                    unit.clone(),
+                    COLOURS.get(i).cloned().unwrap_or(DEFAULT_COLOUR),
+                )
+            })
+            .collect::<HashMap<_, _>>(),
+    );
     let classes = StoredValue::new(
         timetable
             .into_iter()
@@ -95,7 +128,7 @@ fn Timetable(timetable: BTreeMap<UnitCode, BTreeMap<Activity, Class>>) -> impl I
                             each=[classes.read_value().get(&day).cloned().unwrap_or_default()]
                             key={|(unit, activity, _)| (unit.clone(), activity.clone())}
                         |class| {
-                            Class class={class};
+                            Class units_to_colour={units_to_colour.get_value()} class={class};
                         }
                     )
                 )
@@ -106,13 +139,15 @@ fn Timetable(timetable: BTreeMap<UnitCode, BTreeMap<Activity, Class>>) -> impl I
 
 #[component]
 pub fn Class(
+    units_to_colour: HashMap<UnitCode, &'static str>,
     #[prop(name = "class")] (unit, activity, class): (UnitCode, Activity, Class),
 ) -> impl IntoView {
     let top = (class.start - START_TIME) as f32 / (END_TIME - START_TIME) as f32 * 100.0;
     let height = (class.end - class.start) as f32 / (END_TIME - START_TIME) as f32 * 100.0;
+    let colour = *units_to_colour.get(&unit).unwrap();
     mview! {
         div class={s::class} style:top=f["{}%", top] style:height=f["{}%", height] (
-            div class={s::class_inner} (
+            div class={s::class_inner} style:background-color=f["var(--{}-3)",colour] (
                 strong ({format!("{unit} {activity}")})
                 {class.code}
                 {format!("{} – {}", format_time(class.start), format_time(class.end))}
