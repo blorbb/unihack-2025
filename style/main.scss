@@ -38,6 +38,7 @@
 
 :root {
   // see readme
+  --base-transitions: ;
   --component-transitions: var(--base-transitions);
 
   // fonts //
@@ -309,16 +310,41 @@ h3 {
 }
 
 
+.member-list-wrapper-aadda01 {
+  background-color: var(--color-surface-container);
+}
+
 .member-list-aadda01 {
 }
 
 .member-aadda01 {
+  display: grid;
+}
+
+.member-link-aadda01 {
+  display: flex;
+  gap: 1rem;
+  text-decoration: none;
+  padding: 1rem;
+
+  &[aria-current="true"] {
+    background-color: var(--color-surface-container-high);
+  }
+
+  transition: background-color var(--time-transition);
+
+  &:hover,
+  &:focus {
+    background-color: var(--color-surface-container-high);
+  }
 }
 
 .member-name-aadda01 {
+  text-decoration: underline;
 }
 
 .member-units-aadda01 {
+  color: var(--color-on-surface-variant);
 }
 
 

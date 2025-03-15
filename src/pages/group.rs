@@ -49,18 +49,21 @@ pub fn GroupPage() -> impl IntoView {
 #[component]
 fn GroupList(#[prop(into)] group: Signal<backend::Group>) -> impl IntoView {
     mview! {
-        ul class={s::member_list} (
-            For
-                each=[group.read().members.clone()]
-                key={|member| member.clone()}
-            |member| {
-                li class={s::member} (
-                    A href={urlencoding::encode(&member).into_owned()} (
-                        span class={s::member_name} ({member})
-                        span class={s::member_units} ("TODO")
+        div class={s::member_list_wrapper} (
+            h2("Group Members")
+            ul class={s::member_list} (
+                For
+                    each=[group.read().members.clone()]
+                    key={|member| member.clone()}
+                |member| {
+                    li class={s::member} (
+                        A attr:class={s::member_link} href={urlencoding::encode(&member).into_owned()} (
+                            span class={s::member_name} ({member})
+                            span class={s::member_units} ("TODO")
+                        )
                     )
-                )
-            }
+                }
+            )
         )
     }
 }

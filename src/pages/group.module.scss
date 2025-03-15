@@ -1,11 +1,36 @@
+.member-list-wrapper {
+  background-color: var(--color-surface-container);
+}
+
 .member-list {
 }
 
 .member {
+  display: grid;
+}
+
+.member-link {
+  display: flex;
+  gap: 1rem;
+  text-decoration: none;
+  padding: 1rem;
+
+  &[aria-current="true"] {
+    background-color: var(--color-surface-container-high);
+  }
+
+  transition: background-color var(--time-transition);
+
+  &:hover,
+  &:focus {
+    background-color: var(--color-surface-container-high);
+  }
 }
 
 .member-name {
+  text-decoration: underline;
 }
 
 .member-units {
+  color: var(--color-on-surface-variant);
 }
