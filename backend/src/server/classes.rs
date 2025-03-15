@@ -5,7 +5,7 @@ use itertools::Itertools;
 use num_traits::FromPrimitive;
 use tokio_stream::{StreamExt, wrappers::ReadDirStream};
 
-use crate::{Activity, Class, Classes, UnitCode, UnitInfo};
+use crate::shared::activity::{Activity, Class, Classes, UnitCode, UnitInfo};
 
 fn parse_class(data: &serde_json::Value) -> Option<Option<(Activity, Class)>> {
     let part = data.get("part")?.as_str()?;

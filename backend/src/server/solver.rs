@@ -10,7 +10,7 @@ use rand::{
     seq::{IndexedRandom, IteratorRandom},
 };
 
-use crate::shared::*;
+use crate::shared::activity::*;
 
 const POPULATION: usize = 50;
 const ITERATIONS: usize = 100;
@@ -129,10 +129,14 @@ pub fn solve(class_times: &ClassTimes, users: &HashMap<Username, UserInfo>) {
     }
 
     for _ in 0..ITERATIONS {
-        while (solutions.len() > POPULATION / 2) {
+        while solutions.len() > POPULATION / 2 {
             solutions.first_entry().unwrap().remove();
         }
-        let solution = new_sol(class_times, solutions.iter().choose(&mut rng).unwrap().1, &mut rng);
+        let solution = new_sol(
+            class_times,
+            solutions.iter().choose(&mut rng).unwrap().1,
+            &mut rng,
+        );
         let score = score_solve(users, &solution);
         let hash = hash_solve(&solution);
         solutions.insert((score, hash), solution);
