@@ -1,3 +1,7 @@
+.home-link {
+  margin-bottom: 2rem;
+}
+
 .layout {
   display: grid;
   grid-template-columns: 10rem 1fr;
@@ -17,9 +21,7 @@
 
 .member-list-wrapper {
   background-color: var(--color-surface-container);
-}
-
-.member-list {
+  padding: 1em;
 }
 
 .member {

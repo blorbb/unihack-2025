@@ -1,7 +1,4 @@
-use std::{
-    collections::{BTreeMap, hash_map::Entry},
-    str::FromStr,
-};
+use std::{collections::BTreeMap, str::FromStr};
 
 use anyhow::anyhow;
 use serde::{Deserialize, Serialize};
@@ -25,15 +22,11 @@ pub enum GetError {
     ServerError,
 }
 
-// TODO: Give a real Error
-pub fn create_group() -> Result<String, ()> {
+pub fn create_group() -> String {
     let id = Uuid::now_v7();
     let mut groups = state::GROUPS.lock().unwrap(); // Take lock to access inside
-    match groups.entry(id) {
-        Entry::Occupied(_) => return Err(()),
-        Entry::Vacant(x) => x.insert_entry(GroupState::new()),
-    };
-    Ok(id.to_string())
+    groups.insert(id, GroupState::new());
+    id.to_string()
 }
 
 pub fn get_group(id: &str) -> Option<Group> {

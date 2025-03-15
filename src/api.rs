@@ -9,8 +9,7 @@ use backend::{
 
 #[server]
 pub async fn create_group() -> Result<String, ServerFnError> {
-    backend::api::create_group()
-        .map_err(|_| ServerFnError::Response(String::from("TODO create group error")))
+    Ok(backend::api::create_group())
 }
 
 #[server]
