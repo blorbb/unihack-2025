@@ -1,8 +1,9 @@
-use backend::Member;
+use backend::{activity::WeekDay, Member};
 use leptos::prelude::*;
 use leptos_mview::mview;
 use leptos_router::{hooks::use_params, params::Params};
 use serde::{Deserialize, Serialize};
+use strum::IntoEnumIterator;
 
 use crate::api;
 
@@ -50,7 +51,16 @@ pub fn Calendar(#[prop(into)] member: Signal<Member>) -> impl IntoView {
     mview! {
         h1({member().name})
 
-
+        div (
+            For
+                each=[WeekDay::iter()]
+                key={WeekDay::clone}
+            |day| {
+                div (
+                    h2({<&str>::from(day)})
+                )
+            }
+        )
     }
 }
 

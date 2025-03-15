@@ -2,12 +2,25 @@ use std::collections::HashMap;
 
 use num_derive::FromPrimitive;
 use serde::{Deserialize, Serialize};
+use strum::{EnumIter, IntoStaticStr};
 
 pub type UnitCode = String;
 pub type Activity = String;
 
 #[derive(
-    Clone, Copy, Debug, Hash, PartialEq, Eq, PartialOrd, Ord, FromPrimitive, Serialize, Deserialize,
+    Clone,
+    Copy,
+    Debug,
+    Hash,
+    PartialEq,
+    Eq,
+    PartialOrd,
+    Ord,
+    EnumIter,
+    FromPrimitive,
+    IntoStaticStr,
+    Serialize,
+    Deserialize,
 )]
 pub enum WeekDay {
     Monday,
