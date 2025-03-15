@@ -341,7 +341,8 @@ h3 {
 .home-link-981fdab {
   margin-bottom: 2rem;
   a {
-    &:hover, &:focus {
+    &:hover,
+    &:focus {
       text-decoration: none;
     }
   }
@@ -365,7 +366,7 @@ h3 {
 }
 
 .member-list-wrapper-981fdab {
-  background-color: var(--violet-2);
+  background-color: var(--violet-1);
   color: var(--color-on-violet-2);
   padding: 1em;
 }
@@ -404,7 +405,7 @@ h3 {
 }
 
 .header-c6e7cb7 {
-  background: var(--violet-2);
+  background: var(--violet-1);
   color: var(--color-on-violet-2);
 }
 

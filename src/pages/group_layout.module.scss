@@ -1,7 +1,8 @@
 .home-link {
   margin-bottom: 2rem;
   a {
-    &:hover, &:focus {
+    &:hover,
+    &:focus {
       text-decoration: none;
     }
   }
@@ -25,7 +26,7 @@
 }
 
 .member-list-wrapper {
-  background-color: var(--violet-2);
+  background-color: var(--violet-1);
   color: var(--color-on-violet-2);
   padding: 1em;
 }
