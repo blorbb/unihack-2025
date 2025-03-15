@@ -9,3 +9,5 @@ itertools = "0.14"
 derive_more = { version = "2", features = ["full"] }
 serde = { version = "1", features = ["derive", "rc"] }
 rand = "0.9.0"
+uuid = { version = "1.16.0", features = ["js", "rng", "v4", "v7"] }
+thiserror = "2.0.12"
