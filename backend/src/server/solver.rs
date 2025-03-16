@@ -106,17 +106,27 @@ fn new_sol(class_times: &ClassTimes, solution: &Solution, rng: &mut ThreadRng) -
     let mut solution = solution.clone();
 
     for _ in 0..MUTATIONS {
-        let (_, units) = solution.iter_mut().choose(rng).unwrap();
-        let (unit, activities) = units.iter_mut().choose(rng).unwrap();
-        let (activity, class) = activities.iter_mut().choose(rng).unwrap();
-
-        *class = class_times[unit].1[activity].choose(rng).unwrap().clone();
+        let (_, units) = solution
+            .iter_mut()
+            .choose(rng)
+            .expect("no members? this shouldn't happen");
+        if let Some((unit, activities)) = units.iter_mut().choose(rng) {
+            let (activity, class) = activities
+                .iter_mut()
+                .choose(rng)
+                .expect("no activities? this shouldn't happen");
+            *class = class_times[unit].1[activity].choose(rng).unwrap().clone();
+        }
     }
 
     solution
 }
 
 pub fn solve(class_times: &ClassTimes, members: &Vec<Member>) -> (Solution, i64) {
+    if members.is_empty() {
+        return (Solution::new(), 0);
+    }
+
     let mut rng = rng();
 
     let mut solutions: BTreeMap<(i64, u64), Solution> = BTreeMap::new();

@@ -20,6 +20,7 @@ pub async fn get_group(id: String) -> Result<Option<GroupInfo>, ServerFnError> {
         return Ok(None);
     };
     Ok(Some(GroupInfo {
+        id,
         members: group
             .members
             .into_iter()
@@ -91,12 +92,14 @@ pub async fn get_unit_activities(unit: String) -> Result<Option<Vec<String>>, Se
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GroupInfo {
+    pub id: String,
     pub members: Vec<MemberInfo>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct MemberInfo {
     pub name: String,
+    #[serde(default)]
     pub units: Vec<MemberUnitPreferences>,
 }
 
@@ -104,6 +107,7 @@ pub struct MemberInfo {
 pub struct MemberUnitPreferences {
     pub code: UnitCode,
     /// Map from activity name to people
+    #[serde(default)]
     pub activities: BTreeMap<String, BTreeSet<String>>,
 }
 

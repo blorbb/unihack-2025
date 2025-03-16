@@ -1,7 +1,7 @@
 use crate::members::Member;
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone)]
 pub struct Group {
     pub members: Vec<Member>,
 }

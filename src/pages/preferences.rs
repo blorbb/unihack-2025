@@ -1,7 +1,11 @@
 use std::collections::{BTreeMap, BTreeSet};
 
-use crate::{clone_in, components::Selector};
-use leptos::prelude::*;
+use crate::{
+    api::update_member,
+    clone_in,
+    components::{button::ButtonVariant, Button, Selector},
+};
+use leptos::{prelude::*, task::spawn_local};
 use leptos_mview::mview;
 use leptos_router::hooks::use_params;
 use leptos_router::params::Params;
@@ -164,6 +168,16 @@ pub fn Preferences(
                     )
                 }
             )
+
+            Button
+                variant={ButtonVariant::Primary}
+                on:click={move |_| {
+                    let group_id = group.id.clone();
+                    spawn_local(async move {
+                        update_member(group_id, member()).await.expect("update member failed")
+                    })
+                }}
+                ("Submit")
         )
     }
     .into_any()

@@ -7,7 +7,7 @@ pub enum Preference {
     ShareClass(UnitCode, Activity, String),
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone)]
 pub struct Member {
     pub name: String,
     pub preferences: Vec<Preference>,

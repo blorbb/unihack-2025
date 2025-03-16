@@ -71,11 +71,11 @@ pub fn add_group_member(group_id: &str, member_name: &str) -> Result<(), GetErro
 pub fn update_member(group_id: &str, member: Member) -> anyhow::Result<()> {
     let mut groups = state::GROUPS.lock().unwrap();
 
-    let group = groups
+    let group_state = groups
         .get_mut(&Uuid::from_str(group_id)?)
         .ok_or(anyhow!("Invalid group id"))?;
 
-    group.group.members = group
+    group_state.group.members = group_state
         .group
         .members
         .iter()
@@ -83,11 +83,11 @@ pub fn update_member(group_id: &str, member: Member) -> anyhow::Result<()> {
         .cloned()
         .collect();
 
-    group.group.members.push(member);
+    group_state.group.members.push(member);
 
-    let sol = solve(&state::CLASSES, &group.group.members).0;
+    let sol = solve(&state::CLASSES, &group_state.group.members).0;
 
-    group.calendar = sol;
+    group_state.calendar = sol;
 
     Ok(())
 }
@@ -168,8 +168,16 @@ mod state {
         if TESTING {
             let mut group_state = GroupState::new();
 
+            let mut bobr = Member::new("bobr");
+            bobr.units = vec![
+                "FIT1045".to_string(),
+                "FIT1047".to_string(),
+                "MAT1830".to_string(),
+                "MTH1030".to_string(),
+            ];
+            group_state.group.members.push(bobr);
             group_state.group.members.extend(
-                vec!["bobr", "cat", "car"]
+                vec!["cat", "car"]
                     .into_iter()
                     .map(Member::new)
                     .collect::<Vec<_>>(),
