@@ -3,7 +3,7 @@
   height: 100%;
   display: block;
   padding: 0.5rem;
-  background-color: var(--color-surface-container-high);
+  background-color: var(--color-surface-container);
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
@@ -18,7 +18,7 @@
 }
 
 .modal {
-  background-color: var(--color-surface-container-high);
+  background-color: var(--color-surface-container);
   padding: 1rem;
   display: grid;
   gap: 1rem;
