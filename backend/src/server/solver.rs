@@ -16,6 +16,7 @@ const POPULATION: usize = 300;
 const MAX_ITERATIONS: usize = 500;
 const ITERATIONS_WITHOUT_IMPROVEMENT: usize = 100;
 const MUTATIONS_PER_PERSON: usize = 2;
+const MAX_SOL_GENERATION: usize = POPULATION * 5;
 
 type Solution = BTreeMap<String, BTreeMap<UnitCode, BTreeMap<Activity, Class>>>;
 
@@ -162,17 +163,25 @@ pub fn solve(class_times: &ClassTimes, members: &Vec<Member>) -> (Solution, i64)
         return (random_sol(class_times, &members, &mut rng), -100);
     }
 
-    while solutions.len() < POPULATION {
+    let mut iters = 0;
+    while solutions.len() < POPULATION && iters < MAX_SOL_GENERATION {
         let solution = random_sol(class_times, members, &mut rng);
         let score = score_solve(members, &solution);
         let hash = hash_solve(&solution);
         solutions.insert((score, hash), solution);
+        iters += 1;
+    }
+
+    if (solutions.len() < POPULATION) {
+        let ((score, _), sol) = solutions.last_key_value().unwrap();
+        return (sol.clone(), *score);
     }
 
     let mut best_score = solutions.last_key_value().unwrap().0.0;
     let mut iterations_without_improvement = 0;
 
     for iteration in 0..MAX_ITERATIONS {
+        println!("Solving");
         while solutions.len() > POPULATION / 2 {
             solutions.first_entry().unwrap().remove();
         }
