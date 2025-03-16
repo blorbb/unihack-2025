@@ -9,12 +9,26 @@
   gap: 0.5rem;
   cursor: pointer;
 
+  --base-transitions: box-shadow var(--time-transition);
+  box-shadow: inset 0px 0px 0px 0px currentColor;
+  transition: var(--base-transitions);
+
+  &:hover:not(:focus-visible),
+  :focus:not(:focus-visible) {
+    box-shadow: inset 0px 0px 0px 0.2rem currentColor;
+  }
+
   > span {
-    background-color: var(--color-tertiary-container);
-    color: var(--color-on-tertiary-container);
+    background-color: var(--color-tertiary);
+    color: var(--color-on-tertiary);
     padding: 0.25rem 0.5rem;
     border-radius: 999rem;
   }
+}
+
+.selector,
+.modal {
+  border-radius: var(--brad-small);
 }
 
 .modal {
@@ -30,7 +44,9 @@
 
   button {
     padding: 0.5rem;
-    border-radius: 999rem;
+    border-radius: var(--brad-small);
+    background-color: var(--color-tertiary);
+    color: var(--color-on-tertiary);
   }
 }
 
