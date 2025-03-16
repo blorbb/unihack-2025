@@ -1,13 +1,3 @@
-.home-link {
-  padding: 1rem;
-  a {
-    &:hover,
-    &:focus {
-      text-decoration: none;
-    }
-  }
-}
-
 .layout {
   display: grid;
   grid-template-columns: 13rem 1fr;
@@ -22,6 +12,16 @@
 
   > main {
     display: grid;
+  }
+}
+
+.home-link {
+  padding: 1rem;
+  a {
+    &:hover,
+    &:focus {
+      text-decoration: none;
+    }
   }
 }
 
