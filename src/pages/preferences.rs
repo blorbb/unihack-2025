@@ -1,7 +1,6 @@
 use std::collections::{BTreeMap, BTreeSet};
 
 use crate::{
-    api::update_member,
     clone_in,
     components::{button::ButtonVariant, Button, Selector},
 };
@@ -175,7 +174,7 @@ pub fn Preferences(
                 on:click={move |_| {
                     let group_id = group.id.clone();
                     spawn_local(async move {
-                        update_member(group_id, member()).await.expect("update member failed")
+                        api::update_member(group_id, member()).await.expect("update member failed")
                     })
                 }}
                 ("Submit")
