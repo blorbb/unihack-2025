@@ -5,8 +5,12 @@
     margin-top: 1rem;
   }
 
+  h2 {
+    font-size: var(--fs-large);
+  }
+
   h3 {
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     padding: 0.5rem;
   }
 }
@@ -53,4 +57,9 @@
     border: 1px solid var(--color-outline-variant);
     padding: 0.25rem 0.5rem;
   }
+}
+
+.pref-submit {
+  padding: 0.5rem 1rem;
+  border-radius: var(--brad-small);
 }

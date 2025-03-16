@@ -170,6 +170,7 @@ pub fn Preferences(
             )
 
             Button
+                class={s::pref_submit}
                 variant={ButtonVariant::Primary}
                 on:click={move |_| {
                     let group_id = group.id.clone();
