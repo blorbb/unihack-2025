@@ -54,17 +54,23 @@ pub fn get_group(id: &str) -> Option<Group> {
 // Group already exists, member is being created
 pub fn add_group_member(group_id: &str, member_name: &str) -> Result<(), GetError> {
     let group_id = Uuid::from_str(group_id).map_err(|_| GetError::InvalidId)?;
-    // TODO: don't allow duplicate members
+    if member_name.is_empty() {
+        // do nothing if empty name
+        return Ok(());
+    }
 
-    let member = Member::new(member_name);
     {
         let mut groups = state::GROUPS.lock().unwrap();
-        groups
+        let members = &mut groups
             .get_mut(&group_id)
             .ok_or(GetError::GroupNotFound)?
             .group
-            .members
-            .push(member);
+            .members;
+        if members.iter().any(|mem| mem.name == member_name) {
+            // do nothing if member already exists
+        } else {
+            members.push(Member::new(member_name));
+        }
     }
 
     Ok(())
