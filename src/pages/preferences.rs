@@ -9,6 +9,7 @@ use leptos_mview::mview;
 use leptos_router::hooks::use_params;
 use leptos_router::params::Params;
 use serde::{Deserialize, Serialize};
+use tap::Tap;
 
 use crate::api::{self, GroupInfo, MemberInfo, MemberUnitPreferences};
 
@@ -234,7 +235,7 @@ fn UnitPreferences(
                         td({activity.clone()})
                         td(
                             Selector
-                                options={Signal::derive(move || group_members.get_value())}
+                                options={Signal::derive(move || group_members.get_value().tap_mut(|x| _ = x.remove(&member().name)))}
                                 // members needs to be accessed through unit() to be reactive
                                 selected={Signal::derive(clone_in!(activity, move || unit().activities[&activity].clone()))}
                                 set_selected={move |sel| set_activity_users(activity.clone(), sel)};
