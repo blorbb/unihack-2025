@@ -7,6 +7,7 @@ stylance::import_style!(s, "no_member_selected.module.scss");
 pub fn NoMemberSelected() -> impl IntoView {
     mview! {
         div class={s::layout} (
+            // TODO: add member button
             h2 class={s::no_member} ("Select or add a new group member")
         )
     }

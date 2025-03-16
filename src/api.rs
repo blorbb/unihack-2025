@@ -61,7 +61,10 @@ pub async fn get_group(id: String) -> Result<Option<GroupInfo>, ServerFnError> {
 #[server]
 pub async fn add_group_member(group_id: String, member: String) -> Result<(), ServerFnError> {
     backend::api::add_group_member(&group_id, &member)
-        .map_err(|e| ServerFnError::ServerError(e.to_string()))
+        .map_err(|e| ServerFnError::WrappedServerError(e))?;
+    // TODO: fix issue where it doesn't refresh properly?
+    leptos_axum::redirect(&format!("/g/{group_id}/{}", urlencoding::encode(&member)));
+    Ok(())
 }
 
 #[server]

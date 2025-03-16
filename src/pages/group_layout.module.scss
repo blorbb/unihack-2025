@@ -60,3 +60,14 @@
 .member-name {
   text-decoration: underline;
 }
+
+.add-member-form {
+  display: flex;
+  gap: .2rem;
+}
+
+.add-member-button {
+  padding: 1rem;
+  background: none;
+  outline: none;
+}

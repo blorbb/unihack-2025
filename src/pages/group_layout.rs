@@ -7,7 +7,10 @@ use leptos_router::{
 };
 use serde::{Deserialize, Serialize};
 
-use crate::api::{self, GroupInfo};
+use crate::{
+    api::{self, AddGroupMember, GroupInfo},
+    components::{button::ButtonVariant, Button},
+};
 
 stylance::import_style!(s, "group_layout.module.scss");
 
@@ -58,6 +61,8 @@ pub fn GroupLayout() -> impl IntoView {
 #[component]
 fn GroupList(group: GroupInfo) -> impl IntoView {
     let group = StoredValue::new(group);
+    let add_group_member = ServerAction::<AddGroupMember>::new();
+
     mview! {
         nav class={s::member_list_wrapper} (
             h1 class={s::home_link} (A href="/" ("una 📅"))
@@ -68,12 +73,28 @@ fn GroupList(group: GroupInfo) -> impl IntoView {
                     each=[group.read_value().members.iter().map(|m| m.name.clone()).collect::<Vec<_>>()]
                     key={|member| member.clone()}
                 |member| {
+                    // TODO: delete member button
                     li class={s::member} (
                         A attr:class={s::member_link} href={urlencoding::encode(&member).into_owned()} (
                             span class={s::member_name} ({member})
                         )
                     )
                 }
+
+                li class={s::member} (
+                    ActionForm attr:class={s::add_member_form} action={add_group_member} (
+                        input type="hidden" name="group_id" prop:value={group.read_value().id.clone()};
+                        input class={s::member_link}
+                            name="member" placeholder="Add member";
+                        Button
+                            class={s::add_member_button}
+                            variant={ButtonVariant::Primary}
+                            type="submit"
+                        (
+                            "+"
+                        )
+                    )
+                )
             )
 
         )
