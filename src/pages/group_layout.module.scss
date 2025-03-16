@@ -1,5 +1,5 @@
 .home-link {
-  margin-bottom: 2rem;
+  padding: 1rem;
   a {
     &:hover,
     &:focus {
@@ -10,7 +10,7 @@
 
 .layout {
   display: grid;
-  grid-template-columns: 10rem 1fr;
+  grid-template-columns: 13rem 1fr;
   min-height: 100dvh;
 
   > * {
@@ -28,7 +28,11 @@
 .member-list-wrapper {
   background-color: var(--violet-1);
   color: var(--color-on-violet-2);
-  padding: 1em;
+
+  h2 {
+    padding: 1rem;
+    font-size: 1.2rem;
+  }
 }
 
 .member {

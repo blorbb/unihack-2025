@@ -339,7 +339,7 @@ h3 {
 
 
 .home-link-981fdab {
-  margin-bottom: 2rem;
+  padding: 1rem;
   a {
     &:hover,
     &:focus {
@@ -350,7 +350,7 @@ h3 {
 
 .layout-981fdab {
   display: grid;
-  grid-template-columns: 10rem 1fr;
+  grid-template-columns: 13rem 1fr;
   min-height: 100dvh;
 
   > * {
@@ -368,7 +368,11 @@ h3 {
 .member-list-wrapper-981fdab {
   background-color: var(--violet-1);
   color: var(--color-on-violet-2);
-  padding: 1em;
+
+  h2 {
+    padding: 1rem;
+    font-size: 1.2rem;
+  }
 }
 
 .member-981fdab {
@@ -495,10 +499,9 @@ h3 {
 
 
 .layout-6910ffc {
-  padding: 5px;
-  padding-left: 10px;
   color: var(--color-on-surface-container);
   background-color: var(--color-surface-container);
+  padding: 1rem;
 }
 
 .member-nav-6910ffc {
