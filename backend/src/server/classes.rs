@@ -39,7 +39,7 @@ fn load_unit_classes(file: &Path) -> Result<(UnitCode, UnitInfo, Classes)> {
     let result: Option<(UnitCode, UnitInfo, HashMap<Activity, Vec<Class>>)> = try {
         let code = data.get("code")?.as_str()?[..7].to_owned();
         let name = data.get("title")?.as_str()?.to_owned();
-        let classes = data
+        let activities = data
             .get("activity_data")?
             .as_array()?
             .iter()
@@ -47,7 +47,10 @@ fn load_unit_classes(file: &Path) -> Result<(UnitCode, UnitInfo, Classes)> {
             .collect::<Vec<_>>()
             .into_iter()
             .into_group_map();
-        (code, UnitInfo { name }, classes)
+        if activities.is_empty() {
+            None?;
+        }
+        (code, UnitInfo { name }, activities)
     };
     result.ok_or(anyhow!("invalid data: {data}"))
 }
