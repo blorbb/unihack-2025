@@ -69,8 +69,14 @@ pub async fn add_group_member(group_id: String, member: String) -> Result<(), Se
 
 #[server]
 pub async fn update_member(group_id: String, member: MemberInfo) -> Result<(), ServerFnError> {
+    let member_name = member.name.clone();
     backend::api::update_member(&group_id, Member::from(member))
-        .map_err(|e| ServerFnError::ServerError(e.to_string()))
+        .map_err(|e| ServerFnError::ServerError::<backend::api::GetError>(e.to_string()))?;
+    leptos_axum::redirect(&format!(
+        "/g/{group_id}/{}/timetable",
+        urlencoding::encode(&member_name)
+    ));
+    Ok(())
 }
 
 #[server]
