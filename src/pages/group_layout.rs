@@ -5,6 +5,7 @@ use leptos_router::{
     hooks::use_params,
     params::Params,
 };
+use leptos_use::{use_clipboard, UseClipboardReturn};
 use serde::{Deserialize, Serialize};
 
 use crate::{
@@ -62,11 +63,7 @@ pub fn GroupLayout() -> impl IntoView {
 fn GroupList(group: GroupInfo) -> impl IntoView {
     let group = StoredValue::new(group);
     let add_group_member = ServerAction::<AddGroupMember>::new();
-    // TODO: figure out why on earth use_clipboard fails sometimes with fn not implement on wasm???
-    let copy = |value: &str| {
-        let clipboard = window().navigator().clipboard();
-        let _ = clipboard.write_text(value);
-    };
+    let UseClipboardReturn { copy, .. } = use_clipboard();
 
     mview! {
         nav class={s::member_list_wrapper} (
