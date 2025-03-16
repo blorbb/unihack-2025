@@ -577,6 +577,8 @@ h3 {
 
 .searched-unit-3346bf1 {
   padding: 0.5rem;
+  display: flex;
+  gap: 0.5rem;
   text-align: start;
 }
 
@@ -606,6 +608,13 @@ h3 {
 .pref-submit-3346bf1 {
   padding: 0.5rem 1rem;
   border-radius: var(--brad-small);
+}
+
+.unit-code-3346bf1 {
+  font-weight: bold;
+}
+.unit-name-3346bf1 {
+  color: var(--color-on-surface-variant);
 }
 
 

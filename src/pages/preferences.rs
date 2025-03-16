@@ -134,19 +134,22 @@ pub fn Preferences(
                             For
                                 each=[
                                     units.iter()
-                                        .filter(|unit| !member.read().units.iter().any(|u| u.code == **unit))
+                                        .filter(|(code, _)| !member.read().units.iter().any(|u| u.code == *code))
                                         .cloned()
                                         .collect::<Vec<_>>()
                                 ]
-                                key={String::clone}
-                            |unit| {
+                                key={|(code, _)| code.clone()}
+                            |(code, name)| {
                                 li(
                                     button class={s::searched_unit}
                                         on:click={
-                                            let unit = unit.clone();
-                                            move |_| add_unit(unit.clone())
+                                            let code = code.clone();
+                                            move |_| add_unit(code.clone())
                                         }
-                                    ({unit})
+                                    (
+                                        span class={s::unit_code} ({code})
+                                        span class={s::unit_name} ({name})
+                                    )
                                 )
                             }
                         }.into_any(),

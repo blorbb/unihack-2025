@@ -7,7 +7,7 @@ use uuid::Uuid;
 
 use crate::{
     Member, TESTING,
-    activity::{Activity, Class, UnitCode},
+    activity::{Activity, Class, UnitCode, UnitInfo},
     groups::Group,
 };
 
@@ -94,19 +94,27 @@ pub fn update_member(group_id: &str, member: Member) -> anyhow::Result<()> {
     Ok(())
 }
 
-pub fn search_units(query: &str) -> Vec<String> {
+pub fn search_units(query: &str) -> Vec<(String, String)> {
     if query.trim().is_empty() {
         return vec![];
     }
 
-    // TODO: fuzzy search
-    // TODO: return unit name
     state::CLASSES
-        .keys()
-        .filter(|s| s.to_lowercase().starts_with(&query.to_lowercase()))
-        .cloned()
+        .iter()
+        .map(|(code, (UnitInfo { name }, _))| (code.clone(), name.clone()))
         .collect::<Vec<_>>()
-        .tap_mut(|x| x.sort())
+        .tap_mut(|x| {
+            x.sort_by_cached_key(|(code, name)| {
+                // rank unit code matches higher
+                -(6 * sublime_fuzzy::best_match(query, &code)
+                    .map(|m| m.score())
+                    .unwrap_or(0)
+                    + sublime_fuzzy::best_match(query, &name)
+                        .map(|m| m.score())
+                        .unwrap_or(0))
+            })
+        })
+        .tap_mut(|x| _ = x.drain(usize::min(20, x.len())..))
 }
 
 pub fn get_member_calendar(

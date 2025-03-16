@@ -33,6 +33,8 @@
 
 .searched-unit {
   padding: 0.5rem;
+  display: flex;
+  gap: 0.5rem;
   text-align: start;
 }
 
@@ -62,4 +64,11 @@
 .pref-submit {
   padding: 0.5rem 1rem;
   border-radius: var(--brad-small);
+}
+
+.unit-code {
+  font-weight: bold;
+}
+.unit-name {
+  color: var(--color-on-surface-variant);
 }
