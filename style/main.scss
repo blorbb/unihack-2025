@@ -292,7 +292,7 @@ h3 {
   --color-on-primary-container: rgb(31 16 71);
   --color-secondary: rgb(97 91 113);
   --color-on-secondary: rgb(255 255 255);
-  --color-secondary-container: rgb(231 222 248);
+  --color-secondary-container: var(--violet-2);
   --color-on-secondary-container: rgb(29 25 43);
   --color-tertiary: rgb(125 82 97);
   --color-on-tertiary: rgb(255 255 255);
@@ -363,6 +363,11 @@ h3 {
       text-decoration: none;
     }
   }
+}
+
+.copy-id-button-981fdab {
+  padding: 1rem;
+  width: 100%;
 }
 
 .member-list-wrapper-981fdab {

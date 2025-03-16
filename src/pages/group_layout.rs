@@ -62,10 +62,21 @@ pub fn GroupLayout() -> impl IntoView {
 fn GroupList(group: GroupInfo) -> impl IntoView {
     let group = StoredValue::new(group);
     let add_group_member = ServerAction::<AddGroupMember>::new();
+    // TODO: figure out why on earth use_clipboard fails sometimes with fn not implement on wasm???
+    let copy = |value: &str| {
+        let clipboard = window().navigator().clipboard();
+        let _ = clipboard.write_text(value);
+    };
 
     mview! {
         nav class={s::member_list_wrapper} (
             h1 class={s::home_link} (A href="/" ("una 📅"))
+
+            Button
+                variant={ButtonVariant::Secondary}
+                class={s::copy_id_button}
+                on:click={move |_| copy(&group.read_value().id) }
+                ("Copy Group ID")
 
             h2("Group Members")
             ul (
