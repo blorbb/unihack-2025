@@ -1,5 +1,4 @@
 use crate::members::Member;
-use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone)]
 pub struct Group {
