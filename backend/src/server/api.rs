@@ -54,6 +54,8 @@ pub fn get_group(id: &str) -> Option<Group> {
 // Group already exists, member is being created
 pub fn add_group_member(group_id: &str, member_name: &str) -> Result<(), GetError> {
     let group_id = Uuid::from_str(group_id).map_err(|_| GetError::InvalidId)?;
+    // TODO: don't allow duplicate members
+
     let member = Member::new(member_name);
     {
         let mut groups = state::GROUPS.lock().unwrap();
@@ -82,9 +84,8 @@ pub fn update_member(group_id: &str, member: Member) -> anyhow::Result<()> {
         .filter(|x| x.name != member.name)
         .cloned()
         .collect();
-    group_state.group.members.sort_by_key(|x| x.name.clone());
-
     group_state.group.members.push(member);
+    group_state.group.members.sort_by_key(|x| x.name.clone());
 
     let sol = solve(&state::CLASSES, &group_state.group.members).0;
 
