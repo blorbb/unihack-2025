@@ -1,6 +1,6 @@
 use std::{collections::HashMap, path::Path};
 
-use anyhow::{Result, anyhow};
+use anyhow::Result;
 use itertools::Itertools;
 use num_traits::FromPrimitive;
 
@@ -34,32 +34,30 @@ fn parse_class(data: &serde_json::Value) -> Option<(Activity, Class)> {
     ))
 }
 
-fn load_unit_classes(file: &Path) -> Result<(UnitCode, UnitInfo, Classes)> {
-    let data = serde_json::from_slice::<serde_json::Value>(&std::fs::read(file)?)?;
-    let result: Option<(UnitCode, UnitInfo, HashMap<Activity, Vec<Class>>)> = try {
-        let code = data.get("code")?.as_str()?[..7].to_owned();
-        let name = data.get("title")?.as_str()?.to_owned();
-        let activities = data
-            .get("activity_data")?
-            .as_array()?
-            .iter()
-            .filter_map(parse_class)
-            .collect::<Vec<_>>()
-            .into_iter()
-            .into_group_map();
-        if activities.is_empty() {
-            None?;
-        }
-        (code, UnitInfo { name }, activities)
-    };
-    result.ok_or(anyhow!("invalid data: {data}"))
+fn load_unit_classes(file: &Path) -> Option<(UnitCode, UnitInfo, Classes)> {
+    let data = serde_json::from_slice::<serde_json::Value>(&std::fs::read(file).ok()?).ok()?;
+    let code = data.get("code")?.as_str()?[..7].to_owned();
+    let name = data.get("title")?.as_str()?.to_owned();
+    let activities = data
+        .get("activity_data")?
+        .as_array()?
+        .iter()
+        .filter_map(parse_class)
+        .collect::<Vec<_>>()
+        .into_iter()
+        .into_group_map();
+    if activities.is_empty() {
+        return None;
+    }
+    Some((code, UnitInfo { name }, activities))
 }
 
 pub fn load_classes(dir: &Path) -> Result<HashMap<UnitCode, (UnitInfo, Classes)>> {
     Ok(std::fs::read_dir(dir)?
         .map(|x| Ok(load_unit_classes(&x?.path())))
-        .collect::<Result<Result<Vec<_>>>>()??
+        .collect::<Result<Vec<Option<_>>>>()?
         .into_iter()
+        .flatten()
         .map(|(code, info, classes)| (code, (info, classes)))
         .collect::<HashMap<_, _>>())
 }
