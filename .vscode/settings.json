@@ -6,5 +6,8 @@
     }
   },
   "rust-analyzer.cargo.features": ["ssr"],
-  "rust-analyzer.cargo.targetDir": true
+  "rust-analyzer.cargo.targetDir": true,
+  "cSpell.words": [
+    "bobr"
+  ]
 }
