@@ -12,9 +12,10 @@ use rand::{
 
 use crate::{Member, members::Preference, shared::activity::*};
 
-const POPULATION: usize = 200;
-const ITERATIONS: usize = 200;
-const MUTATIONS: usize = 5;
+const POPULATION: usize = 300;
+const MAX_ITERATIONS: usize = 500;
+const ITERATIONS_WITHOUT_IMPROVEMENT: usize = 100;
+const MUTATIONS_PER_PERSON: usize = 2;
 
 type Solution = BTreeMap<String, BTreeMap<UnitCode, BTreeMap<Activity, Class>>>;
 
@@ -102,24 +103,48 @@ fn hash_solve(solution: &Solution) -> u64 {
     hasher.finish()
 }
 
-fn new_sol(class_times: &ClassTimes, solution: &Solution, rng: &mut ThreadRng) -> Solution {
+fn new_sol(
+    class_times: &ClassTimes,
+    solution: &Solution,
+    rng: &mut ThreadRng,
+    people: usize,
+    classes_to_change: &Vec<(String, UnitCode, Activity)>,
+) -> Solution {
     let mut solution = solution.clone();
 
-    for _ in 0..MUTATIONS {
-        let (_, units) = solution
-            .iter_mut()
+    for _ in 0..(MUTATIONS_PER_PERSON * people) {
+        let (username, unit_code, activity) = classes_to_change.choose(rng).unwrap();
+        let new_class = class_times[unit_code].1[activity]
             .choose(rng)
-            .expect("no members? this shouldn't happen");
-        if let Some((unit, activities)) = units.iter_mut().choose(rng) {
-            let (activity, class) = activities
-                .iter_mut()
-                .choose(rng)
-                .expect("no activities? this shouldn't happen");
-            *class = class_times[unit].1[activity].choose(rng).unwrap().clone();
-        }
+            .unwrap()
+            .clone();
+
+        solution
+            .get_mut(username)
+            .unwrap()
+            .get_mut(unit_code)
+            .unwrap()
+            .insert(activity.clone(), new_class);
     }
 
     solution
+}
+
+fn classes_to_change(
+    class_times: &ClassTimes,
+    members: &Vec<Member>,
+) -> Vec<(String, UnitCode, Activity)> {
+    let mut classes_to_change: Vec<(String, UnitCode, Activity)> = Vec::new();
+
+    members.iter().for_each(|member| {
+        member.units.iter().for_each(|unit| {
+            class_times[unit].1.iter().for_each(|(activity, _)| {
+                classes_to_change.push((member.name.clone(), unit.clone(), activity.clone()))
+            })
+        })
+    });
+
+    classes_to_change
 }
 
 pub fn solve(class_times: &ClassTimes, members: &Vec<Member>) -> (Solution, i64) {
@@ -131,6 +156,12 @@ pub fn solve(class_times: &ClassTimes, members: &Vec<Member>) -> (Solution, i64)
 
     let mut solutions: BTreeMap<(i64, u64), Solution> = BTreeMap::new();
 
+    let classes_to_change = classes_to_change(class_times, members);
+
+    if classes_to_change.len() == 0 {
+        return (random_sol(class_times, &members, &mut rng), -100);
+    }
+
     while solutions.len() < POPULATION {
         let solution = random_sol(class_times, members, &mut rng);
         let score = score_solve(members, &solution);
@@ -138,7 +169,10 @@ pub fn solve(class_times: &ClassTimes, members: &Vec<Member>) -> (Solution, i64)
         solutions.insert((score, hash), solution);
     }
 
-    for iteration in 0..ITERATIONS {
+    let mut best_score = solutions.last_key_value().unwrap().0.0;
+    let mut iterations_without_improvement = 0;
+
+    for iteration in 0..MAX_ITERATIONS {
         while solutions.len() > POPULATION / 2 {
             solutions.first_entry().unwrap().remove();
         }
@@ -148,10 +182,22 @@ pub fn solve(class_times: &ClassTimes, members: &Vec<Member>) -> (Solution, i64)
                 class_times,
                 solutions.iter().choose(&mut rng).unwrap().1,
                 &mut rng,
+                members.len(),
+                &classes_to_change,
             );
             let score = score_solve(members, &solution);
             let hash = hash_solve(&solution);
             solutions.insert((score, hash), solution);
+        }
+
+        if solutions.last_key_value().unwrap().0.0 == best_score {
+            iterations_without_improvement += 1;
+            if (iterations_without_improvement > ITERATIONS_WITHOUT_IMPROVEMENT) {
+                break;
+            };
+        } else {
+            iterations_without_improvement = 0;
+            best_score = solutions.last_key_value().unwrap().0.0;
         }
 
         #[cfg(debug_assertions)]
