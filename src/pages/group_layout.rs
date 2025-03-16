@@ -1,4 +1,4 @@
-use leptos::prelude::*;
+use leptos::{ev, html, prelude::*, task::spawn_local};
 use leptos_mview::mview;
 use leptos_router::{
     components::{Outlet, A},
@@ -45,7 +45,7 @@ pub fn GroupLayout() -> impl IntoView {
                     let view = match group {
                         Ok(Some(g)) => mview! {
                             div class={s::layout} (
-                                GroupList group={g};
+                                GroupList group={g} on_add=[group_resource.refetch()];
                                 main(Outlet;)
                             )
                         },
@@ -60,9 +60,32 @@ pub fn GroupLayout() -> impl IntoView {
 }
 
 #[component]
-fn GroupList(group: GroupInfo) -> impl IntoView {
+fn GroupList(group: GroupInfo, on_add: impl Fn() + Clone + Send + Sync + 'static) -> impl IntoView {
     let group = StoredValue::new(group);
-    let add_group_member = ServerAction::<AddGroupMember>::new();
+    let member_input = NodeRef::<html::Input>::new();
+    let add_group_member = move |ev: ev::SubmitEvent| {
+        ev.prevent_default();
+
+        match AddGroupMember::from_event(&ev) {
+            Ok(new_input) => {
+                let on_add = on_add.clone();
+                spawn_local(async move {
+                    api::add_group_member(new_input.group_id, new_input.member)
+                        .await
+                        .unwrap();
+                    on_add();
+                    let el = member_input.get().unwrap();
+                    el.set_value("");
+                })
+            }
+            Err(err) => {
+                leptos::logging::error!(
+                    "Error converting form field into server function \
+                     arguments: {err:?}"
+                );
+            }
+        }
+    };
     let UseClipboardReturn { copy, .. } = use_clipboard();
 
     mview! {
@@ -90,9 +113,9 @@ fn GroupList(group: GroupInfo) -> impl IntoView {
                 }
 
                 li class={s::member} (
-                    ActionForm attr:class={s::add_member_form} action={add_group_member} (
+                    form method="POST" class={s::add_member_form} on:submit={add_group_member} (
                         input type="hidden" name="group_id" prop:value={group.read_value().id.clone()};
-                        input class={s::member_link}
+                        input class={s::member_link} ref={member_input}
                             name="member" placeholder="Add member";
                         Button
                             class={s::add_member_button}
