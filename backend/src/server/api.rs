@@ -82,6 +82,7 @@ pub fn update_member(group_id: &str, member: Member) -> anyhow::Result<()> {
         .filter(|x| x.name != member.name)
         .cloned()
         .collect();
+    group_state.group.members.sort_by_key(|x| x.name.clone());
 
     group_state.group.members.push(member);
 
