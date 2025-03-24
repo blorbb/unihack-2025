@@ -16,7 +16,7 @@ fn parse_class(data: &serde_json::Value) -> Option<(Activity, Class)> {
     if activity.starts_with("PASS-Optional") || activity == "Assessment" {
         return None;
     }
-    let day = FromPrimitive::from_u64(data.get("day")?.as_u64()?)?;
+    let day = FromPrimitive::from_u64(data.get("day")?.as_u64()? - 1)?;
     let code = data.get("series")?.as_str()?.to_owned();
     let start = {
         let (hr, min) = data.get("startTime")?.as_str()?.split_once(':')?;
